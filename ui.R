@@ -18,7 +18,7 @@ ui <-  bs4DashPage(
           type = "notification"
         ),
         bs4DropdownMenuItem(
-          src = "D:/DS/IoT my task/AP/bs4dash/ap_dp.jpg",
+          src = "D:/DS/IoT my task/AP/bs4dash/BS4DASH/ap_dp.jpg",
           from = "Soumya Boral",
           message = "Call me whenever you can...",
           time = "4 Minutes Ago",

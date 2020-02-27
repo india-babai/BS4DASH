@@ -21,8 +21,8 @@ server <-  function(input, output, session) {
   dat <- reactive(
     influxdbr::influx_select(
       con(),
-      db = database_name,
-      measurement = measurement_name,
+      db = input$dbname,
+      measurement = input$measurement,
       field_keys = "X_ut, Y_ut, Z_ut, T_c",
       where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = 'LIS3MDL' "),
       limit = 6000,

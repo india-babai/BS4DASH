@@ -156,11 +156,7 @@ ui <-  bs4DashPage(
   )
 ,
   footer = bs4DashFooter(
-    copyrights = a(
-      href = "https://twitter.com/divadnojnarg", 
-      target = "_blank", "@DivadNojnarg"
-    ),
-    right_text = "2018"
+    right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Arijit ", Sys.Date()))
   ),
-  title = "bs4Dash Showcase"
+  title = "InfluxDB Showcase"
 )

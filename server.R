@@ -29,6 +29,19 @@ server <-  function(input, output, session) {
       return_xts = F
     )[[1]]
   )
+  observe({
+    if (sum(sapply(dat(), function(x)all(is.na(x)))) == 5){
+      showModal(
+        modalDialog(
+          title = "ERROR",
+          "No records returned. Change the date",
+          easyClose = TRUE,
+          footer = NULL
+        )
+      )
+    }
+  })
+  
   
  # cat(input$datetime)
   

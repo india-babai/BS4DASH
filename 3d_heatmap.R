@@ -154,8 +154,3 @@ heatmap_3d <- function(mgf_submit_1){
     )
   p
 }
-
-# values <- round(mat,2)
-# title <- paste("3D plot from influxDB")
-# mgf_submit_1 <- list(values, title)
-# heatmap_3d(mgf_submit_1)

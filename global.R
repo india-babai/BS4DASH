@@ -57,10 +57,11 @@ basic_cards_tab <- bs4TabItem(
     sidebarLayout(
       sidebarPanel(
         textInput("connection", "InfluxDB connection", value = 8086),
-        textInput("dbname", "InfluxDB database name", value = "example2"),
+        textInput("dbname", "InfluxDB database name", value = "example3"),
         textInput("measurement", "InfluxDB measurement name", value = "two_mab_test_run"),
-        dateInput("date", "Choose the date", value = "2020-01-07" ),
-        timeInput("time", "Choose time", value = "2020-01-07 12:23:57"),
+        selectInput("magtype", "Choose Mag-type", choices =  c("LIS3MDL", "MLX90393")),
+        dateInput("date", "Date", value = "2020-01-07" ),
+        timeInput("time", "Time", value = "2020-01-07 16:52:57"),
         submitButton(text = "Submit", icon = icon("refresh")),
         width = 2
       ),

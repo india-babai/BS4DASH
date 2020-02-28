@@ -5,7 +5,6 @@ ui <-  bs4DashPage(
   controlbar_overlay = FALSE,
   navbar = bs4DashNavbar(
     status = "white",
-    actionButton(inputId = "controlbarToggle", label = "Toggle Controlbar"),
     rightUi = tagList(
       bs4DropdownMenu(
         show = FALSE,
@@ -28,7 +27,7 @@ ui <-  bs4DashPage(
       bs4UserMenu(
         name = "Arijit Pal", 
         status = "primary",
-        # src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg", 
+        src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
         # src = "https://www.pastepic.xyz/image/Q27fW",
         title = "bs4Dash",
         subtitle = "Author", 
@@ -41,9 +40,9 @@ ui <-  bs4DashPage(
     expand_on_hover = TRUE,
     skin = "light",
     status = "primary",
-    title = "bs4Dash",
+    title = "InfluxDB",
     brandColor = "primary",
-    url = "https://www.google.fr",
+    url = "https://www.influxdata.com/",
     src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
     elevation = 3,
     opacity = 0.8,
@@ -156,7 +155,7 @@ ui <-  bs4DashPage(
   )
 ,
   footer = bs4DashFooter(
-    right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Arijit ", Sys.Date()))
+    right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Arijit,", Sys.Date()))
   ),
   title = "InfluxDB Showcase"
 )

@@ -24,17 +24,19 @@ server <-  function(input, output, session) {
       db = input$dbname,
       measurement = input$measurement,
       field_keys = "X_ut, Y_ut, Z_ut, T_c",
-      where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = 'LIS3MDL' "),
+      where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = ",paste0("'", input$magtype, "'" )),
       limit = 6000,
       return_xts = F
     )[[1]]
   )
+  
   observe({
-    if (sum(sapply(dat(), function(x)all(is.na(x)))) == 5){
+    if (sum(sapply(dat(), function(x)
+      all(is.na(x)))) == 5) {
       showModal(
         modalDialog(
           title = "ERROR",
-          "No records returned. Change the date",
+          "No records returned. Try changing the date/time",
           easyClose = TRUE,
           footer = NULL
         )
@@ -43,25 +45,13 @@ server <-  function(input, output, session) {
   })
   
   
- # cat(input$datetime)
-  
   mgf_submit <- function(indata, parm){
     mat <- matrix(indata[[parm]], nrow = 10, ncol = 10, byrow = T)
     values <- round(mat,2)
-    title <- paste("3D heatmap from influxDB: ", parm)
+    title <- paste("3D Heatmap - ", parm)
     list(values, title)
   }
-  
-  # mgf_submit_x <- reactive({
-  #   mgf_submit(dat(), "X_ut")
-  # })
-  # mgf_submit_y <- reactive({
-  #   mgf_submit(dat(), "Y_ut")
-  # })
-  # mgf_submit_z <- reactive({
-  #   mgf_submit(dat(), "Z_ut")
-  # })
-  #   
+
   output$plot_heatmap_x <- renderPlotly({
     tempdat <- mgf_submit(dat(), "X_ut")
     heatmap_3d(tempdat)
@@ -74,26 +64,13 @@ server <-  function(input, output, session) {
     tempdat <- mgf_submit(dat(), "Z_ut")
     heatmap_3d(tempdat)
   })
-  # output$datatable <- renderDataTable({
-  #   temp <- head(dat()[,3:8], n= 5)
-  #     # select(time, X_ut, Y_ut, Z_ut ) 
-  #     # knitr::kable("html") %>% 
-  #     # kable_styling("striped", full_width = F)
-  #   
-  # })
   #### Heatmap 3D: End ####
   
 
   output$bigPlot <- renderPlot({
     hist(rnorm(input$bigObs))
   })
-  
 
-  
-  # output$plot <- renderPlot({
-  #   hist(rnorm(input$obs))
-  # })
-  
   # this is not reactive but just for fixing the plot size on the client side.
   output$riverPlot <- renderEcharts4r({
     river %>%

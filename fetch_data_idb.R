@@ -50,9 +50,11 @@ dat <-
                            db = database_name,
                            measurement = measurement_name,
                            field_keys = "X_ut, Y_ut, Z_ut, T_c",
-                           where = "time = '2020-01-07 12:23:58' and mag_type = 'LIS3MDL' ",
+                           where = "time = '2020-01-07 12:23:57' and mag_type = 'LIS3MDL' ",
                            limit = 6000,
                            return_xts = F)[[1]]
+
+dat[,4:8]
 
 mat <- matrix(dat$X_ut, nrow = 10, ncol = 10, byrow = T)
 

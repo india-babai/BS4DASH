@@ -32,16 +32,42 @@ server <-  function(input, output, session) {
   
  # cat(input$datetime)
   
-  mgf_submit_1 <- reactive({
-    mat <- matrix(dat()[[input$heatmap_parm]], nrow = 10, ncol = 10, byrow = T)
+  mgf_submit <- function(indata, parm){
+    mat <- matrix(indata[[parm]], nrow = 10, ncol = 10, byrow = T)
     values <- round(mat,2)
-    title <- paste("3D plot from influxDB::", input$heatmap_parm)
+    title <- paste("3D heatmap from influxDB: ", parm)
     list(values, title)
+  }
+  
+  # mgf_submit_x <- reactive({
+  #   mgf_submit(dat(), "X_ut")
+  # })
+  # mgf_submit_y <- reactive({
+  #   mgf_submit(dat(), "Y_ut")
+  # })
+  # mgf_submit_z <- reactive({
+  #   mgf_submit(dat(), "Z_ut")
+  # })
+  #   
+  output$plot_heatmap_x <- renderPlotly({
+    tempdat <- mgf_submit(dat(), "X_ut")
+    heatmap_3d(tempdat)
   })
-    
-  output$plot_heatmap <- renderPlotly(
-    heatmap_3d(mgf_submit_1())
-  )
+  output$plot_heatmap_y <- renderPlotly({
+    tempdat <- mgf_submit(dat(), "Y_ut")
+    heatmap_3d(tempdat)
+  })
+  output$plot_heatmap_z <- renderPlotly({
+    tempdat <- mgf_submit(dat(), "Z_ut")
+    heatmap_3d(tempdat)
+  })
+  # output$datatable <- renderDataTable({
+  #   temp <- head(dat()[,3:8], n= 5)
+  #     # select(time, X_ut, Y_ut, Z_ut ) 
+  #     # knitr::kable("html") %>% 
+  #     # kable_styling("striped", full_width = F)
+  #   
+  # })
   #### Heatmap 3D: End ####
   
 

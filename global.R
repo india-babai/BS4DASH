@@ -5,6 +5,7 @@ library(bs4Dash)
 library(plotly)
 library(echarts4r)
 library(shinyTime)
+library(kableExtra)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 
 # color statuses
@@ -58,39 +59,21 @@ basic_cards_tab <- bs4TabItem(
         textInput("connection", "InfluxDB connection", value = 8086),
         textInput("dbname", "InfluxDB database name", value = "example2"),
         textInput("measurement", "InfluxDB measurement name", value = "two_mab_test_run"),
-        selectInput(
-          "heatmap_parm",
-          "Choose parameter",
-          choices = c("Bx" = "X_ut", "By" = "Y_ut", "Bz" = "Z_ut", "T" = "T_c"),
-          selected = "X_ut"
-        ),
-        dateInput("date", "Choose the date" ),
-        timeInput("time", "Choose time"),
+        dateInput("date", "Choose the date", value = "2020-01-07" ),
+        timeInput("time", "Choose time", value = "2020-01-07 12:23:57"),
         submitButton(text = "Submit", icon = icon("refresh")),
         width = 2
       ),
       mainPanel(
-        bs4Card(
-          title = "3D Heatmap", 
-          closable = TRUE, 
-          width = 12,
-          height = "800px",
-          status = "dark",
-          solidHeader = FALSE, 
-          collapsible = TRUE,
-          # labelText = 1,
-          # labelStatus = "danger",
-          # labelTooltip = "Hi Bro!",
-          dropdownIcon = "wrench",
-          dropdownMenu = dropdownItemList(
-            dropdownItem(url = "https://www.google.com", name = "Link to google"),
-            dropdownItem(url = "#", name = "item 2"),
-            dropdownDivider(),
-            dropdownItem(url = "#", name = "item 3")
-          ),
-          plotlyOutput("plot_heatmap"),
-          h1("Plots are here")
-        ), width = 10
+          plotlyOutput("plot_heatmap_x"),
+          br(),hr(), 
+          plotlyOutput("plot_heatmap_y"),
+          br(),hr(),
+          plotlyOutput("plot_heatmap_z")
+          # h1("data will be here"),
+          # dataTableOutput("datatable")
+   
+        , width = 10
       ),
       position = "right"
     )

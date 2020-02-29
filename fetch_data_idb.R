@@ -24,7 +24,7 @@ data_path <- "D:/DS/IoT my task/AP/bs4dash/IoT/inputs/testing/"
 setwd("D:/DS/IoT my task/AP/bs4dash/IoT/")
 # # 
 source("1_csv_influx_injest.R")
-injest_csv(con, database_name = database_name, measurement_name = measurement_name, path = data_path)
+injest_csv(con, database_name = database_name, measurement_name = measurement_name, path = data_path, precision = "m")
 
 # drop_measurement(con = con, db = database_name, measurement = measurement_name)
 
@@ -46,7 +46,7 @@ con <- influxdbr::influx_connection(host = "localhost",
                                     user = "username",
                                     pass = "password")
 influxdbr::show_databases(con)
-# influxdbr::drop_database(con, "example3")
+influxdbr::drop_database(con, "example3")
 
 database_name <- "example3"
 measurement_name <- "two_mab_test_run"
@@ -56,7 +56,7 @@ dat <-
                            db = database_name,
                            measurement = measurement_name,
                            field_keys = "X_ut, Y_ut, Z_ut, T_c",
-                           where = "time = '2020-01-07 16:52:57' and mag_type = 'LIS3MDL' ",
+                           where = "time < '2020-01-07 16:53:56' and mag_type = 'LIS3MDL' ",
                            limit = 10000,
                            return_xts = F)[[1]]
 # 12:23:58

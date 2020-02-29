@@ -25,10 +25,10 @@ ui <-  bs4DashPage(
         )
       ),
       bs4UserMenu(
-        name = "Arijit Pal", 
+        name = "Sinclair", 
         status = "primary",
-        src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
-        # src = "https://www.pastepic.xyz/image/Q27fW",
+        # src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
+        src = "sinclair logo.png",
         title = "bs4Dash",
         subtitle = "Author", 
         footer = p("The footer", class = "text-center"),
@@ -40,10 +40,10 @@ ui <-  bs4DashPage(
     expand_on_hover = TRUE,
     skin = "light",
     status = "primary",
-    title = "InfluxDB",
+    title = "Sinclair",
     brandColor = "primary",
     url = "https://www.influxdata.com/",
-    src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
+    src = "sinclair logo.png",
     elevation = 3,
     opacity = 0.8,
     bs4SidebarMenu(
@@ -155,7 +155,7 @@ ui <-  bs4DashPage(
   )
 ,
   footer = bs4DashFooter(
-    right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Arijit,", Sys.Date()))
+    right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Sinclair,", Sys.Date()))
   ),
   title = "InfluxDB Showcase"
 )

@@ -51,6 +51,8 @@ server <-  function(input, output, session) {
     title <- paste("3D Heatmap - ", parm)
     list(values, title)
   }
+  
+  output$show_date_time <- renderText(paste("Date and time: ",datetime()))
 
   output$plot_heatmap_x <- renderPlotly({
     tempdat <- mgf_submit(dat(), "X_ut")
@@ -62,6 +64,10 @@ server <-  function(input, output, session) {
   })
   output$plot_heatmap_z <- renderPlotly({
     tempdat <- mgf_submit(dat(), "Z_ut")
+    heatmap_3d(tempdat)
+  })
+  output$plot_heatmap_t <- renderPlotly({
+    tempdat <- mgf_submit(dat(), "T_c")
     heatmap_3d(tempdat)
   })
   #### Heatmap 3D: End ####

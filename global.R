@@ -61,16 +61,20 @@ basic_cards_tab <- bs4TabItem(
         textInput("measurement", "InfluxDB measurement name", value = "two_mab_test_run"),
         selectInput("magtype", "Choose Mag-type", choices =  c("LIS3MDL", "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
-        timeInput("time", "Time", value = "2020-01-07 16:52:57"),
+        timeInput("time", "Time", value = "2020-01-07 16:53:00"),
         submitButton(text = "Submit", icon = icon("refresh")),
         width = 2
       ),
       mainPanel(
+          h5("Appropriate title placeholder"),
+          h6(textOutput("show_date_time")),
           plotlyOutput("plot_heatmap_x"),
           br(),hr(), 
           plotlyOutput("plot_heatmap_y"),
           br(),hr(),
-          plotlyOutput("plot_heatmap_z")
+          plotlyOutput("plot_heatmap_z"),
+          br(),hr(),
+          plotlyOutput("plot_heatmap_t")
           # h1("data will be here"),
           # dataTableOutput("datatable")
    

@@ -17,8 +17,8 @@ ui <-  bs4DashPage(
           type = "notification"
         ),
         bs4DropdownMenuItem(
-          src = "D:/DS/IoT my task/AP/bs4dash/BS4DASH/ap_dp.jpg",
-          from = "Soumya Boral",
+          src = "ap_dp.jpg",
+          from = "Arijit Pal",
           message = "Call me whenever you can...",
           time = "4 Minutes Ago",
           type = "message"
@@ -58,8 +58,8 @@ ui <-  bs4DashPage(
         icon = "cube"
       ),
       bs4SidebarMenuItem(
-        "Other plots",
-        tabName = "cardsAPI",
+        "Table plots",
+        tabName = "tabplot",
         icon = "cube"
       ),
       bs4SidebarMenuItem(

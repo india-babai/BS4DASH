@@ -8,6 +8,15 @@ library(shinyTime)
 library(kableExtra)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 
+# blank table
+blank_tab <- data.frame()
+blank_tab$Date <- character(0)
+blank_tab$Method <- character(0)
+blank_tab$`Volume(cc)` <- numeric(0)
+blank_tab$`X axis(mm)` <- numeric(0)
+blank_tab$`Y axis(mm)` <- numeric(0)
+blank_tab$`Picture of defect` = character(0)
+
 # color statuses
 statusColors <- c(
   "navy",
@@ -62,7 +71,7 @@ basic_cards_tab <- bs4TabItem(
         selectInput("magtype", "Choose Mag-type", choices =  c("LIS3MDL", "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
         timeInput("time", "Time", value = "2020-01-07 16:53:00"),
-        submitButton(text = "Submit", icon = icon("refresh")),
+        # submitButton(text = "Submit", icon = icon("refresh")),
         width = 2
       ),
       mainPanel(
@@ -72,9 +81,9 @@ basic_cards_tab <- bs4TabItem(
           br(),hr(), 
           plotlyOutput("plot_heatmap_y"),
           br(),hr(),
-          plotlyOutput("plot_heatmap_z"),
-          br(),hr(),
-          plotlyOutput("plot_heatmap_t")
+          plotlyOutput("plot_heatmap_z")
+          # br(),hr(),
+          # plotlyOutput("plot_heatmap_t")
           # h1("data will be here"),
           # dataTableOutput("datatable")
    
@@ -85,36 +94,59 @@ basic_cards_tab <- bs4TabItem(
   )
 )
 
-#' card API
+#' Table plot
 cards_api_tab <- bs4TabItem(
-  tabName = "cardsAPI",
-  actionButton(inputId = "triggerCard", label = "Trigger Card Action"),
-  selectInput(
-    inputId = "cardAction", 
-    label = "Card action", 
-    choices = c(
-      "remove",
-      "toggle",
-      "toggleMaximize",
-      "restore"
-    )
-  ),
-  
+  tabName = "tabplot",
   bs4Card(
     inputId = "mycard",
-    title = "The plot is visible when you maximize the card", 
+    title = "The table is visible when you maximize the card", 
     closable = TRUE, 
     maximizable = TRUE,
     width = 12,
     status = "warning", 
     solidHeader = FALSE, 
     collapsible = TRUE,
-    sliderInput("obsAPI", "Number of observations:",
-                min = 0, max = 1000, value = 500
-    ),
-    plotOutput("cardAPIPlot")
-  )
+    DTOutput("dt")
+  ),
+  hr(),
+  h4("Add or delete rows here"),
+  br(),
+  fluidRow(
+    column(width = 2,
+           dateInput("dt_date", label = "Date")),
+
+    column(width = 2,
+           textInput("dt_method", "Method", value = "Optical")),
+    
+    column(width = 2,
+           numericInput("dt_volume", "Volume", 0.2)),
+    
+    column(width = 2,
+           numericInput("dt_x", "X axis(mm)", 15)),
+    
+    column(width = 2,
+           numericInput("dt_y", "Y axis(mm)", 0.2)),
+    
+    column(width = 2,
+           fileInput("dt_pic", "Picture of the defect", accept = c("jpg", "png"))),
+  ),
+  # Add button
+  actionButton(inputId = "add.button", label = "Add row", icon = 
+                 icon("plus")), 
+  
+  hr(),
+  # Row selection for deletion
+  numericInput(inputId = "row.selection", label = "Select row to be 
+                     deleted", min = 1, max = 100, value = ""),
+
+  # Delete button 
+  actionButton(inputId = "delete.button", label = "Delete row", icon = 
+                 icon("minus")),
+  textOutput("all"),
+  hr(),
+  submitButton(text = "Submit", icon = icon("refresh"))
 )
+
 
 
 #' social_cards_tab ----

@@ -4,27 +4,27 @@
 # tag ---> Character variable (group_by variable)
 # field ---> floating/numeric variable on which time series will be plotted 
 
-# Setting up the connection in influxDB
-library(influxdbr)
-library(RJSONIO)
-library(dplyr)
-library(magrittr)
-library(data.table)
-library(stringr)
-con <- influxdbr::influx_connection(host = "localhost",
-                                    port = 8086,
-                                    user = "username",
-                                    pass = "password")
-database_name <- "example3"
-measurement_name <- "two_mab_test_run"
-create_database(con = con, db = database_name)
-data_path <- "D:/DS/IoT my task/AP/bs4dash/IoT/inputs/testing/"
-# # 
-# # # Set the working directory
-setwd("D:/DS/IoT my task/AP/bs4dash/IoT/")
-# # 
-source("1_csv_influx_injest.R")
-injest_csv(con, database_name = database_name, measurement_name = measurement_name, path = data_path, precision = "m")
+# Setting up the connection in influxDB: For rerun uncomment the the following
+# library(influxdbr)
+# library(RJSONIO)
+# library(dplyr)
+# library(magrittr)
+# library(data.table)
+# library(stringr)
+# con <- influxdbr::influx_connection(host = "localhost",
+#                                     port = 8086,
+#                                     user = "username",
+#                                     pass = "password")
+# database_name <- "example3"
+# measurement_name <- "two_mab_test_run"
+# create_database(con = con, db = database_name)
+# data_path <- "D:/DS/IoT my task/AP/bs4dash/IoT/inputs/testing/"
+# # # 
+# # # # Set the working directory
+# setwd("D:/DS/IoT my task/AP/bs4dash/IoT/")
+# # # 
+# source("1_csv_influx_injest.R")
+# injest_csv(con, database_name = database_name, measurement_name = measurement_name, path = data_path, precision = "m")
 
 # drop_measurement(con = con, db = database_name, measurement = measurement_name)
 
@@ -40,6 +40,7 @@ injest_csv(con, database_name = database_name, measurement_name = measurement_na
   # tag ---> Character variable (group_by variable)
   # field ---> floating/numeric variable on which time series will be plotted 
 
+# This chapter is for testing/debugging the data(that goes into shiny) in local environment
 
 con <- influxdbr::influx_connection(host = "localhost",
                                     port = 8086,

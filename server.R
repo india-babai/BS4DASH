@@ -1,6 +1,8 @@
 server <-  function(input, output, session) {
   
   #### Heatmap 3D: Beginning ####
+  # InfluxDB connection
+
   con <- reactive(
     influxdbr::influx_connection(
       host = "localhost",
@@ -30,6 +32,7 @@ server <-  function(input, output, session) {
     )[[1]]
   )
   
+  # Pop-up error when no data fetched from influxDB database
   observe({
     if (sum(sapply(dat(), function(x)
       all(is.na(x)))) == 5) {
@@ -52,7 +55,7 @@ server <-  function(input, output, session) {
     list(values, title)
   }
   
-  output$show_date_time <- renderText(paste("Date and time: ",datetime()))
+  output$show_date_time <- renderText(paste("Date and time: ", datetime()))
 
   output$plot_heatmap_x <- renderPlotly({
     tempdat <- mgf_submit(dat(), "X_ut")
@@ -66,11 +69,41 @@ server <-  function(input, output, session) {
     tempdat <- mgf_submit(dat(), "Z_ut")
     heatmap_3d(tempdat)
   })
-  output$plot_heatmap_t <- renderPlotly({
-    tempdat <- mgf_submit(dat(), "T_c")
-    heatmap_3d(tempdat)
-  })
+  # output$plot_heatmap_t <- renderPlotly({
+  #   tempdat <- mgf_submit(dat(), "T_c")
+  #   heatmap_3d(tempdat)
+  # })
   #### Heatmap 3D: End ####
+  
+  
+  #### Table plots: Beginning ####
+ 
+   values <- reactiveValues()
+  values$df <- blank_tab
+  observeEvent(input$add.button,{
+    cat("addEntry\n")
+    temp <- data.frame(input$dt_date,
+                         input$dt_method,
+                         input$dt_volume,
+                         input$dt_x,
+                         input$dt_y,
+                         NA)
+    colnames(temp) <- colnames(values$df)
+    values$df <- rbind(values$df, temp)
+  })
+  
+  observeEvent(input$delete.button, {
+    cat("deleteEntry\n")
+    if (is.na(input$row.selection)) {
+      values$df <- values$df[-nrow(values$df),]
+    } else {
+      values$df <- values$df[-input$row.selection,]
+    }
+  })
+  
+  output$dt <- DT::renderDT(values$df)
+ 
+  #### Table plots: End ####
   
 
   output$bigPlot <- renderPlot({

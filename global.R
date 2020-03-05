@@ -6,6 +6,7 @@ library(plotly)
 library(echarts4r)
 library(shinyTime)
 library(kableExtra)
+library(DT)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 
 # blank table
@@ -71,7 +72,8 @@ basic_cards_tab <- bs4TabItem(
         selectInput("magtype", "Choose Mag-type", choices =  c("LIS3MDL", "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
         timeInput("time", "Time", value = "2020-01-07 16:53:00"),
-        # submitButton(text = "Submit", icon = icon("refresh")),
+        actionButton("heatmap_action", "Submit", icon = icon("refresh"),
+                     style = "color: #fff; background-color: #337ab7; border-color: #2e6da4"),
         width = 2
       ),
       mainPanel(
@@ -131,8 +133,8 @@ cards_api_tab <- bs4TabItem(
            fileInput("dt_pic", "Picture of the defect", accept = c("jpg", "png"))),
   ),
   # Add button
-  actionButton(inputId = "add.button", label = "Add row", icon = 
-                 icon("plus")), 
+  actionButton(inputId = "add.button", label = "Add row", icon =  icon("plus"),
+               style = "color: #fff; background-color: #336600; border-color: #336600"), 
   
   hr(),
   # Row selection for deletion
@@ -140,11 +142,13 @@ cards_api_tab <- bs4TabItem(
                      deleted", min = 1, max = 100, value = ""),
 
   # Delete button 
-  actionButton(inputId = "delete.button", label = "Delete row", icon = 
-                 icon("minus")),
+  actionButton(inputId = "delete.button", label = "Del row", icon = icon("minus"),
+               style = "color: #fff; background-color: #ff0000; border-color: #ff0000" ),
+                
   textOutput("all"),
-  hr(),
-  submitButton(text = "Submit", icon = icon("refresh"))
+  hr()
+  # submitButton(text = "Submit", icon = icon("refresh"))
+  
 )
 
 

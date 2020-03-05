@@ -58,7 +58,7 @@ ui <-  bs4DashPage(
         icon = "cube"
       ),
       bs4SidebarMenuItem(
-        "Table plots",
+        "Defect data",
         tabName = "tabplot",
         icon = "cube"
       ),

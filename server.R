@@ -3,6 +3,7 @@ server <-  function(input, output, session) {
   #### Heatmap 3D: Beginning ####
   # InfluxDB connection
 
+
   con <- reactive(
     influxdbr::influx_connection(
       host = "localhost",
@@ -13,14 +14,14 @@ server <-  function(input, output, session) {
   )
   
   
-  datetime <- reactive({
+  datetime <- eventReactive(input$heatmap_action,{
     date <- input$date
     time <- strftime(input$time, format = "%H:%M:%S")
     datetime <- paste0(date, " ",time)
     datetime
   })
   
-  dat <- reactive(
+  dat <- eventReactive(input$heatmap_action,{
     influxdbr::influx_select(
       con(),
       db = input$dbname,
@@ -30,7 +31,7 @@ server <-  function(input, output, session) {
       limit = 6000,
       return_xts = F
     )[[1]]
-  )
+  })
   
   # Pop-up error when no data fetched from influxDB database
   observe({
@@ -55,8 +56,9 @@ server <-  function(input, output, session) {
     list(values, title)
   }
   
-  output$show_date_time <- renderText(paste("Date and time: ", datetime()))
 
+  
+  output$show_date_time <- renderText(paste("Date and time: ", datetime()))
   output$plot_heatmap_x <- renderPlotly({
     tempdat <- mgf_submit(dat(), "X_ut")
     heatmap_3d(tempdat)
@@ -69,16 +71,13 @@ server <-  function(input, output, session) {
     tempdat <- mgf_submit(dat(), "Z_ut")
     heatmap_3d(tempdat)
   })
-  # output$plot_heatmap_t <- renderPlotly({
-  #   tempdat <- mgf_submit(dat(), "T_c")
-  #   heatmap_3d(tempdat)
-  # })
+
   #### Heatmap 3D: End ####
   
   
   #### Table plots: Beginning ####
  
-   values <- reactiveValues()
+  values <- reactiveValues()
   values$df <- blank_tab
   observeEvent(input$add.button,{
     cat("addEntry\n")
@@ -87,7 +86,9 @@ server <-  function(input, output, session) {
                          input$dt_volume,
                          input$dt_x,
                          input$dt_y,
-                         NA)
+                         # '<img src = "ap_dp.jpg"></img>',
+                         NA
+                       )
     colnames(temp) <- colnames(values$df)
     values$df <- rbind(values$df, temp)
   })
@@ -101,7 +102,7 @@ server <-  function(input, output, session) {
     }
   })
   
-  output$dt <- DT::renderDT(values$df)
+  output$dt <- DT::renderDT(values$df, editable = T, rownames = F, width = "80%")
  
   #### Table plots: End ####
   
@@ -186,21 +187,21 @@ server <-  function(input, output, session) {
   })
   
   
-  observeEvent(input$current_tab, {
-    if (input$current_tab == "cards") {
-      showModal(
-        modalDialog(
-          title = "This event only triggers for the first tab!",
-          "You clicked me! This event is the result of
-          an input bound to the menu. By adding an id to the
-          bs4SidebarMenu, input$id will give the currently selected
-          tab. This is useful to trigger some events.",
-          easyClose = TRUE,
-          footer = NULL
-        )
-      )
-    }
-  })
+  # observeEvent(input$current_tab, {
+  #   if (input$current_tab == "cards") {
+  #     showModal(
+  #       modalDialog(
+  #         title = "This event only triggers for the first tab!",
+  #         "You clicked me! This event is the result of
+  #         an input bound to the menu. By adding an id to the
+  #         bs4SidebarMenu, input$id will give the currently selected
+  #         tab. This is useful to trigger some events.",
+  #         easyClose = TRUE,
+  #         footer = NULL
+  #       )
+  #     )
+  #   }
+  # })
   
   
   output$cardAPIPlot <- renderPlot({

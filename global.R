@@ -7,7 +7,9 @@ library(echarts4r)
 library(shinyTime)
 library(kableExtra)
 library(DT)
+library(imager)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
+datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
 
 # blank table
 blank_tab <- data.frame()
@@ -17,6 +19,10 @@ blank_tab$`Volume(cc)` <- numeric(0)
 blank_tab$`X axis(mm)` <- numeric(0)
 blank_tab$`Y axis(mm)` <- numeric(0)
 blank_tab$`Picture of defect` = character(0)
+
+# initial - table
+initial_tab <- openxlsx::read.xlsx(datapath, sep.names = ' ')
+initial_tab[["Date"]] <- as.Date(initial_tab[["Date"]], "1900-01-01")
 
 # color statuses
 statusColors <- c(
@@ -130,7 +136,7 @@ cards_api_tab <- bs4TabItem(
            numericInput("dt_y", "Y axis(mm)", 0.2)),
     
     column(width = 2,
-           fileInput("dt_pic", "Picture of the defect", accept = c("jpg", "png"))),
+           fileInput("dt_pic", "Picture of the defect", accept = c("jpg", "png", "PNG", "JPG"))),
   ),
   # Add button
   actionButton(inputId = "add.button", label = "Add row", icon =  icon("plus"),

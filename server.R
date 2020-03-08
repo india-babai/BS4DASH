@@ -78,19 +78,36 @@ server <-  function(input, output, session) {
   #### Table plots: Beginning ####
  
   values <- reactiveValues()
-  values$df <- blank_tab
+  # values$df <- blank_tab
+  values$df <- initial_tab
+  
   observeEvent(input$add.button,{
     cat("addEntry\n")
+
+    im <- imager::load.image(input$dt_pic$datapath)
+
+    im_name <-
+      Sys.time() %>% 
+      as.character() %>% 
+      gsub(c(" "), replacement = "_", .) %>% 
+      gsub(":", "_", .) %>% 
+      gsub("-","_",.)
+
+    save.image(im = im, file =  paste0("D:/DS/IoT my task/AP/bs4dash/BS4DASH/www/",im_name,".png"))
+    im_html <- paste0('<img src = ',"'",im_name,".png","'", " height = '52' ></img>")
+    
     temp <- data.frame(input$dt_date,
-                         input$dt_method,
-                         input$dt_volume,
-                         input$dt_x,
-                         input$dt_y,
-                         # '<img src = "ap_dp.jpg"></img>',
-                         NA
+                       input$dt_method,
+                       input$dt_volume,
+                       input$dt_x,
+                       input$dt_y,
+                       im_html
+                       # '<img src = "sinclair logo.png" height="52"></img>'
+                       # NA
                        )
     colnames(temp) <- colnames(values$df)
     values$df <- rbind(values$df, temp)
+    openxlsx::write.xlsx(values$df, file = datapath)
   })
   
   observeEvent(input$delete.button, {
@@ -100,9 +117,11 @@ server <-  function(input, output, session) {
     } else {
       values$df <- values$df[-input$row.selection,]
     }
+    openxlsx::write.xlsx(values$df, file = datapath)
   })
   
-  output$dt <- DT::renderDT(values$df, editable = T, rownames = F, width = "80%")
+  
+  output$dt <- DT::renderDT(values$df, editable = T, rownames = F, width = "80%", escape = FALSE )
  
   #### Table plots: End ####
   

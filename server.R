@@ -1,9 +1,7 @@
 server <-  function(input, output, session) {
   
-  #### Heatmap 3D: Beginning ####
+  # Connection settings ----
   # InfluxDB connection
-
-
   con <- reactive(
     influxdbr::influx_connection(
       host = "localhost",
@@ -14,6 +12,37 @@ server <-  function(input, output, session) {
   )
   
   
+  
+  #### Time series: Beginning ####
+  # datetime <- eventReactive(input$heatmap_action,{
+  #   date <- input$date
+  #   time <- strftime(input$time, format = "%H:%M:%S")
+  #   datetime <- paste0(date, " ",time)
+  #   datetime
+  # })
+  # 
+  # ts_dat <- eventReactive(input$heatmap_action,{
+  #   influxdbr::influx_select(
+  #     con(),
+  #     db = "example",
+  #     measurement = input$measurement,
+  #     field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"',
+  #     # where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = ",paste0("'", input$magtype, "'" )),
+  #     group_by = "mag_type",
+  #     limit = 100,
+  #     return_xts = F
+  #   )[[1]]
+  # })
+  
+  
+  # output$ts_sensor <- renderUI({
+  #   
+  # })
+  ####Time series: End ####
+  
+  
+  
+  #### Heatmap 3D: Beginning ####
   datetime <- eventReactive(input$heatmap_action,{
     date <- input$date
     time <- strftime(input$time, format = "%H:%M:%S")
@@ -84,17 +113,26 @@ server <-  function(input, output, session) {
   observeEvent(input$add.button,{
     cat("addEntry\n")
 
-    im <- imager::load.image(input$dt_pic$datapath)
-
-    im_name <-
-      Sys.time() %>% 
-      as.character() %>% 
-      gsub(c(" "), replacement = "_", .) %>% 
-      gsub(":", "_", .) %>% 
-      gsub("-","_",.)
-
-    save.image(im = im, file =  paste0("D:/DS/IoT my task/AP/bs4dash/BS4DASH/www/",im_name,".png"))
-    im_html <- paste0('<img src = ',"'",im_name,".png","'", " height = '52' ></img>")
+    if (!is.null(input$dt_pic)) {
+      im <- imager::load.image(input$dt_pic$datapath)
+      im_name <-
+        Sys.time() %>%
+        as.character() %>%
+        gsub(" ", replacement = "_", .) %>%
+        gsub(":", "_", .) %>%
+        gsub("-", "_", .)
+      
+      save.image(
+        im = im,
+        file =  paste0("D:/DS/IoT my task/AP/bs4dash/BS4DASH/www/", im_name, ".png")
+      )
+      im_html <-
+        paste0('<img src = ', "'", im_name, ".png", "'", " height = '52' ></img>")
+    }
+    else{
+      im_html <- NA
+    }
+    
     
     temp <- data.frame(input$dt_date,
                        input$dt_method,
@@ -102,8 +140,6 @@ server <-  function(input, output, session) {
                        input$dt_x,
                        input$dt_y,
                        im_html
-                       # '<img src = "sinclair logo.png" height="52"></img>'
-                       # NA
                        )
     colnames(temp) <- colnames(values$df)
     values$df <- rbind(values$df, temp)
@@ -120,9 +156,35 @@ server <-  function(input, output, session) {
     openxlsx::write.xlsx(values$df, file = datapath)
   })
   
+  observeEvent(input$savedat, {
+    cat("saving")
+    openxlsx::write.xlsx(values$df, file = datapath)
+    showModal(modalDialog(title = "Saved!",fade = T, easyClose = T, footer = NULL, size = "s", 
+                          style = "color: #fff; background-color: #336600; border-color: #336600"))
+  })
   
-  output$dt <- DT::renderDT(values$df, editable = T, rownames = F, width = "80%", escape = FALSE )
+  
+  # output$dt <-
+  #   DT::renderDT(
+  #     values$df,
+  #     editable = T,
+  #     rownames = F,
+  #     width = "80%",
+  #     escape = FALSE
+  #   )
+
+  # https://stackoverflow.com/questions/56535488/how-to-download-editable-data-table-in-shiny
+  output$dt <- 
+    DT::renderDT(
+      datatable(values$df, editable = "cell", escape = F, rownames = T )
+    )
  
+  observeEvent(input[["dt_cell_edit"]], {
+    cellinfo <- input[["dt_cell_edit"]]
+    values$df <- editData(values$df, input[["dt_cell_edit"]], "dt")
+  })
+  
+  
   #### Table plots: End ####
   
 

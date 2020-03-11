@@ -40,7 +40,7 @@ ui <-  bs4DashPage(
     expand_on_hover = TRUE,
     skin = "light",
     status = "primary",
-    title = "Sinclair",
+    title = "Sinclair Energy",
     brandColor = "primary",
     url = "https://www.influxdata.com/",
     src = "sinclair logo.png",
@@ -51,7 +51,12 @@ ui <-  bs4DashPage(
       flat = FALSE,
       compact = FALSE,
       child_indent = TRUE,
-      bs4SidebarHeader("Explore me!"),
+      bs4SidebarHeader(h4(strong("Explore me!"))),
+      bs4SidebarMenuItem(
+        "Time series",
+        tabName = "timeseries",
+        icon = "chart-line"
+      ),
       bs4SidebarMenuItem(
         "Heatmap",
         tabName = "cards",
@@ -140,6 +145,7 @@ ui <-  bs4DashPage(
   ),
   body = bs4DashBody(
     bs4TabItems(
+      ts_card_tab,
       basic_cards_tab,
       cards_api_tab,
       social_cards_tab,

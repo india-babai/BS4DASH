@@ -8,7 +8,9 @@ library(shinyTime)
 library(kableExtra)
 library(DT)
 library(imager)
+library(scales)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
+# source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
 datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
 
 # blank table
@@ -66,7 +68,40 @@ df <- data.frame(x, y1 = sin(x), y2 = cos(x))
 x <- rnorm(200)
 y <- rnorm(200)
 
-#' basic_cards_tab ----
+# Time-series tab ----
+    # InfluxDB Database contains many measurements
+    # measurements ---> table-name
+    # tag ---> Character variable (group_by variable)
+    # field ---> floating/numeric variable on which time series will be plotted 
+
+ts_card_tab <- bs4TabItem(
+  tabName = "timeseries",
+    fluidPage(
+      sidebarLayout(position = "right",
+                    sidebarPanel(width = 2,
+                      h6("Customizations"),
+                      hr(),
+                      selectInput("ts_measurement", label = "Table name", choices = "two_mab_test_run" ),
+                      selectInput("ts_mag_type", label = "Mag type", choices = c("LIS3MDL", "MLX90393", "Unidentified Magnetometer") ),
+                      selectInput("ts_sensor", label = "Sensor number", choices = as.character(1:100), multiple = T ),
+                      selectInput("ts_varname", label = "Parameter", choices = c(x = "X(uT)",	y = "Y(uT)", z = "Z(uT)", t =	"T(*C)") )
+                    ),
+                    mainPanel(
+                      h5("Timeseries title placeholder"),
+                      
+                      width = 10
+                    )
+                    
+      )
+      # ,theme = shinytheme(theme = "flatly")
+    )
+)
+  
+
+
+
+
+# basic_cards_tab ----
 basic_cards_tab <- bs4TabItem(
   tabName = "cards",
   fluidPage(
@@ -102,7 +137,7 @@ basic_cards_tab <- bs4TabItem(
   )
 )
 
-#' Table plot
+# Table plot ----
 cards_api_tab <- bs4TabItem(
   tabName = "tabplot",
   bs4Card(
@@ -114,7 +149,8 @@ cards_api_tab <- bs4TabItem(
     status = "warning", 
     solidHeader = FALSE, 
     collapsible = TRUE,
-    DTOutput("dt")
+    DTOutput("dt"),
+    actionButton(inputId = "savedat", "Save", icon = icon("save"))
   ),
   hr(),
   h4("Add or delete rows here"),

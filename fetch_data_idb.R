@@ -1,5 +1,5 @@
 #### Chapter 0: Loading csv data(with the specific format) to influxDB ####
-# Database contains many measurements
+# InfluxDB Database contains many measurements
 # measurements ---> table-name
 # tag ---> Character variable (group_by variable)
 # field ---> floating/numeric variable on which time series will be plotted 
@@ -49,15 +49,18 @@ con <- influxdbr::influx_connection(host = "localhost",
 influxdbr::show_databases(con)
 influxdbr::drop_database(con, "example3")
 
-database_name <- "example3"
+# database_name <- "example3"
+database_name <- "example"
 measurement_name <- "two_mab_test_run"
 
 dat <-
   influxdbr::influx_select(con,
                            db = database_name,
                            measurement = measurement_name,
-                           field_keys = "X_ut, Y_ut, Z_ut, T_c",
-                           where = "time < '2020-01-07 16:53:56' and mag_type = 'LIS3MDL' ",
+                           # field_keys = "X_ut, Y_ut, Z_ut, T_c", #Required for database 'example3'
+                           field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"', #Required for database 'example'
+                           # where = "time < '2020-01-07 16:53:56' and mag_type = 'LIS3MDL' ",
+                           group_by = "mag_type",
                            limit = 10000,
                            return_xts = F)[[1]]
 # 12:23:58

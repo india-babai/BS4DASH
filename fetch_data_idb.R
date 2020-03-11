@@ -59,11 +59,14 @@ dat <-
                            measurement = measurement_name,
                            # field_keys = "X_ut, Y_ut, Z_ut, T_c", #Required for database 'example3'
                            field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"', #Required for database 'example'
-                           # where = "time < '2020-01-07 16:53:56' and mag_type = 'LIS3MDL' ",
-                           group_by = "mag_type",
-                           limit = 10000,
+                           where = "time < '2020-01-07 16:53:56' and time > '2020-01-07 15:53:56'
+                           and mag_type = 'LIS3MDL' and Sensor = '1' or Sensor = '2' ",
+                           group_by = "mag_type, Sensor",
+                           limit = 200,
                            return_xts = F)[[1]]
 # 12:23:58
+
+final <- dat[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
 
 sapply(dat, function(x)all(is.na(x))) %>% sum()
 

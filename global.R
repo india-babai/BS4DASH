@@ -9,6 +9,7 @@ library(kableExtra)
 library(DT)
 library(imager)
 library(scales)
+library(shinyjs)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 # source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
 datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
@@ -83,12 +84,44 @@ ts_card_tab <- bs4TabItem(
                       hr(),
                       selectInput("ts_measurement", label = "Table name", choices = "two_mab_test_run" ),
                       selectInput("ts_mag_type", label = "Mag type", choices = c("LIS3MDL", "MLX90393", "Unidentified Magnetometer") ),
-                      selectInput("ts_sensor", label = "Sensor number", choices = as.character(1:100), multiple = T ),
-                      selectInput("ts_varname", label = "Parameter", choices = c(x = "X(uT)",	y = "Y(uT)", z = "Z(uT)", t =	"T(*C)") )
+                      selectInput("ts_sensor", label = "Sensor number", choices = as.character(1:100), multiple = T, selected = '1'),
+                      selectInput("ts_varname", label = "Parameter", choices = c(x = "X(uT)",	y = "Y(uT)", z = "Z(uT)", t =	"T(*C)") ),
+                      hr(),
+                      dateInput(inputId = "ts_daterange1", label = "From date", value = Sys.Date() - 365, width = "80%"),
+                      sliderInput(
+                        "ts_time1",
+                        "",
+                        min = as.POSIXct("2017-01-01 00:00:00"),
+                        max = as.POSIXct("2017-01-01 23:59:59"),
+                        value = c(
+                          as.POSIXct("2017-01-01 12:00:00")
+                          # as.POSIXct("2017-01-01 18:00:00")
+                        ),
+                        timeFormat = "%T",
+                        step = 30
+                      ),
+                        dateInput(inputId = "ts_daterange2", label = "To date", value = Sys.Date(), width = "80%"),
+                        sliderInput(
+                          "ts_time2",
+                          "",
+                          min = as.POSIXct("2017-01-01 00:00:00"),
+                          max = as.POSIXct("2017-01-01 23:59:59"),
+                          value = c(
+                            as.POSIXct("2017-01-01 12:00:00")
+                            # as.POSIXct("2017-01-01 18:00:00")
+                          ),
+                          timeFormat = "%T",
+                          step = 30
+                        ),
+                      actionButton("ts_action", "Submit", icon = icon("refresh"),
+                                   style = "color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                        
                     ),
                     mainPanel(
-                      h5("Timeseries title placeholder"),
-                      
+                      h6("Timeseries title placeholder"),
+                      hr(),
+                      dataTableOutput("ts_data"),
+                      plotlyOutput("ts_plot"),
                       width = 10
                     )
                     

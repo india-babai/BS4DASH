@@ -14,40 +14,72 @@ server <-  function(input, output, session) {
   
   
   #### Time series: Beginning ####
-  # datetime <- eventReactive(input$heatmap_action,{
-  #   date <- input$date
-  #   time <- strftime(input$time, format = "%H:%M:%S")
-  #   datetime <- paste0(date, " ",time)
-  #   datetime
-  # })
-  # 
-  # ts_dat <- eventReactive(input$heatmap_action,{
-  #   influxdbr::influx_select(
-  #     con(),
-  #     db = "example",
-  #     measurement = input$measurement,
-  #     field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"',
-  #     # where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = ",paste0("'", input$magtype, "'" )),
-  #     group_by = "mag_type",
-  #     limit = 100,
-  #     return_xts = F
-  #   )[[1]]
-  # })
+  date_time_paste <- function(date, time){
+    # date should be in date format
+    # time should be in POSIXct format
+    time <- strftime(time, format = "%H:%M:%S")
+    paste0(date, " ",time)
+    }
   
+  ts_dt1 <- reactive( date_time_paste(date = input$ts_daterange1, input$ts_time1))
+  ts_dt2 <- reactive( date_time_paste(date = input$ts_daterange2, input$ts_time2))
   
-  # output$ts_sensor <- renderUI({
-  #   
-  # })
+  sensor_filter <- reactive({
+    sensors <- input$ts_sensor
+    
+    s1 <- NULL
+    if (length(sensors) > 0) {
+      for (s in sensors) {
+        s1 <- paste0(s1," Sensor = ","'",s,"'", " OR ")
+      }
+      s1 <- substring(s1, 1, nchar(s1) - 3)
+    }
+     # removing the last or
+    s1
+  })
+  
+  ts_dat <- eventReactive(input$ts_action,{
+    temp <- influxdbr::influx_select(
+      con(),
+      db = "example",
+      measurement = input$ts_measurement,
+      field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"',
+      where = paste(
+        "time >= ",
+        paste0("'", ts_dt1(), "'"),
+        "and time <= ",
+        paste0("'", ts_dt2(), "'"),
+        "and mag_type = ",
+        paste0("'", input$ts_mag_type, "'"),
+        "and ",
+        sensor_filter()
+      ),
+      group_by = "mag_type, Sensor",
+      limit = 100,
+      return_xts = F
+    )[[1]]
+    
+    final <- temp[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
+    final
+    
+  })
+  
+  output$ts_plot <- renderPlotly({
+    tsplot(data = ts_dat(), x = "time", y = input$ts_varname)
+  })
+  
+  output$ts_data <- renderDataTable(ts_dat())
   ####Time series: End ####
   
   
   
   #### Heatmap 3D: Beginning ####
   datetime <- eventReactive(input$heatmap_action,{
-    date <- input$date
-    time <- strftime(input$time, format = "%H:%M:%S")
-    datetime <- paste0(date, " ",time)
-    datetime
+    # date <- input$date
+    # time <- strftime(input$time, format = "%H:%M:%S")
+    # datetime <- paste0(date, " ",time)
+    # datetime
+    date_time_paste(input$date, input$time)
   })
   
   dat <- eventReactive(input$heatmap_action,{

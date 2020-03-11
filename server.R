@@ -65,7 +65,7 @@ server <-  function(input, output, session) {
   })
   
   output$ts_plot <- renderPlotly({
-    tsplot(data = ts_dat(), x = "time", y = input$ts_varname)
+    tsplot(data = ts_dat(), x = "time", y = paste0("`",input$ts_varname,"`"))
   })
   
   output$ts_data <- renderDataTable(ts_dat())

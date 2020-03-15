@@ -106,7 +106,9 @@ ts_card_tab <- bs4TabItem(
                     mainPanel(
                       h5("Timeseries title placeholder"),
                       hr(),
-                      dygraphOutput("ts_dy_plot", height = "700px", width = "auto"),
+                      shinycssloaders::withSpinner(
+                      dygraphOutput("ts_dy_plot", height = "700px", width = "auto"), type = 1, color = "#991B1B"
+                      ),
                       hr(),
                       h5("Sensor patch description"),
                       fluidRow(

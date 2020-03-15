@@ -39,7 +39,6 @@ server <-  function(input, output, session) {
   
   sensor_filter <- reactive({
     sensors <- input$ts_sensor
-
     s1 <- NULL
     if (length(sensors) > 0) {
       for (s in sensors) {
@@ -52,8 +51,8 @@ server <-  function(input, output, session) {
   
   
   ts_dat <- 
-    # eventReactive(input$ts_action,{
-    reactive({
+    eventReactive(input$ts_action,{
+    # reactive({
     temp <- influxdbr::influx_select(
       con(),
       db = "example",
@@ -74,39 +73,49 @@ server <-  function(input, output, session) {
       return_xts = F
     )[[1]]
     
-    # final <- temp[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
-    final <- temp
+    if (sum(sapply(temp, function(x)
+           all(is.na(x)))) == 5) {
+      final <- NULL
+    }
+    else {
+      final <- temp
+    }
     final
-  })
-  # }, ignoreNULL = T)
-  
-  
-  
-  
-  
-  # observe({
-  #   if (sum(sapply(ts_dat(), function(x)
-  #     all(is.na(x)))) == 5) {
-  #     showModal(
-  #       modalDialog(
-  #         title = "ERROR",
-  #         "No records returned. Try changing the date/time",
-  #         easyClose = TRUE,
-  #         footer = NULL
-  #       )
-  #     )
-  #   }
   # })
+  }, ignoreNULL = T)
+  
+  
+  
+  
+  
+  observe({
+    if (is.null(ts_dat())) {
+      showModal(
+        modalDialog(
+          title = "ERROR",
+          "No records returned. Try changing the date/time",
+          easyClose = TRUE,
+          footer = NULL
+        )
+      )
+    }
+  })
   
 
   output$ts_dy_plot <- dygraphs::renderDygraph({
-    if (input$ts_varname %in% c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)")) {
-      tsdyplot(data = ts_dat(), var = input$ts_varname, title_comp = "Sensor patch")
+    if (!is.null(ts_dat())) {
+      if (input$ts_varname %in% c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)")) {
+        tsdyplot(
+          data = ts_dat(),
+          var = input$ts_varname,
+          title_comp = "Sensor patch"
+        )
+      }
+      # For LLR, Max_T and LLR & Max_T the graphs to be added
+      else {
+        NULL
+      }
     }
-    else {
-      NULL
-    }
-
   })
 
   

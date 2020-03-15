@@ -59,7 +59,7 @@ dat <-
                            measurement = measurement_name,
                            # field_keys = "X_ut, Y_ut, Z_ut, T_c", #Required for database 'example3'
                            field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"', #Required for database 'example'
-                           where = "time < '2020-01-10 16:53:56' and time > '2020-01-07 15:53:56'
+                           where = "time < '2020-01-10 16:53:56' and time > '2020-01-07 17:31:00'
                            and mag_type = 'MLX90393' and Sensor = '1' or Sensor = '2' or Sensor = '3' ",
                            group_by = "mag_type, Sensor",
                            limit = 20,
@@ -67,4 +67,9 @@ dat <-
 # 12:23:58
 
 final <- dat[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
+tsdyplot(final, "X(uT)", title_comp = "")
+t <- final$time
 
+t1 <- as.character(t)
+t2 <- as.POSIXct(t1, tz = Sys.timezone())
+final$time <- t2

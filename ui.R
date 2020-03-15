@@ -4,7 +4,7 @@ ui <-  bs4DashPage(
   loading_duration = 3,
   controlbar_overlay = FALSE,
   navbar = bs4DashNavbar(
-    status = "white",
+    status = "info",
     rightUi = tagList(
       bs4DropdownMenu(
         show = FALSE,
@@ -25,9 +25,8 @@ ui <-  bs4DashPage(
         )
       ),
       bs4UserMenu(
-        name = "Sinclair", 
+        name = strong("Sinclair"), 
         status = "primary",
-        # src = "https://adminlte.io/themes/AdminLTE/dist/img/user2-160x160.jpg",
         src = "sinclair logo.png",
         title = "bs4Dash",
         subtitle = "Author", 
@@ -38,11 +37,11 @@ ui <-  bs4DashPage(
   ),
   sidebar = bs4DashSidebar(
     expand_on_hover = TRUE,
-    skin = "light",
-    status = "primary",
+    skin = "dark",
+    status = "olive",
     title = "Sinclair Energy",
-    brandColor = "primary",
-    url = "https://www.influxdata.com/",
+    brandColor = "dark",
+    url = "https://sinclairenergy.co.uk/",
     src = "sinclair logo.png",
     elevation = 3,
     opacity = 0.8,
@@ -63,7 +62,7 @@ ui <-  bs4DashPage(
         icon = "cube"
       ),
       bs4SidebarMenuItem(
-        "Defect data",
+        "Cross reference data",
         tabName = "tabplot",
         icon = "cube"
       ),
@@ -71,32 +70,6 @@ ui <-  bs4DashPage(
         "Social cards",
         tabName = "socialcards",
         icon = "id-card"
-      ),
-      bs4SidebarMenuItem(
-        "Tab cards",
-        tabName = "tabcards",
-        icon = "picture-o"
-      ),
-      bs4SidebarMenuItem(
-        "Sortable cards",
-        tabName = "sortablecards",
-        icon = "object-ungroup"
-      ),
-      bs4SidebarMenuItem(
-        "Stats elements",
-        tabName = "statsboxes",
-        icon = "bank"
-      ),
-      bs4SidebarHeader("Boxes"),
-      bs4SidebarMenuItem(
-        "Basic boxes",
-        tabName = "boxes",
-        icon = "desktop"
-      ),
-      bs4SidebarMenuItem(
-        "Value/Info boxes",
-        tabName = "valueboxes",
-        icon = "suitcase"
       ),
       
       bs4SidebarHeader("Colors"),
@@ -149,11 +122,6 @@ ui <-  bs4DashPage(
       basic_cards_tab,
       cards_api_tab,
       social_cards_tab,
-      tab_cards_tab,
-      sortable_cards_tab,
-      statsboxes_tab,
-      boxes_tab,
-      value_boxes_tab,
       colors_tab,
       gallery_1_tab,
       gallery_2_tab

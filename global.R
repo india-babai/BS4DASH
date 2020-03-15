@@ -12,7 +12,7 @@ library(scales)
 library(shinyjs)
 library(dygraphs)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
-# source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
+source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
 datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
 
 # blank table
@@ -51,24 +51,6 @@ statusColors <- c(
   "light"
 )
 
-# river charts 
-dates <- seq.Date(Sys.Date() - 30, Sys.Date(), by = "day")
-
-river <- data.frame(
-  dates = dates,
-  apples = runif(length(dates)),
-  bananas = runif(length(dates)),
-  pears = runif(length(dates))
-)
-
-
-# plot 2
-x <- seq(-2 * pi, 2 * pi, length.out = 1000)
-df <- data.frame(x, y1 = sin(x), y2 = cos(x))
-
-# plot 3
-x <- rnorm(200)
-y <- rnorm(200)
 
 # Time-series tab ----
     # InfluxDB Database contains many measurements
@@ -79,15 +61,16 @@ y <- rnorm(200)
 ts_card_tab <- bs4TabItem(
   tabName = "timeseries",
     fluidPage(
+      useShinyjs(),
       sidebarLayout(position = "right",
-                    sidebarPanel(width = 2,
+                        sidebarPanel(width = 2,
                       h6("Customizations"),
                       hr(),
                       selectInput("ts_measurement", label = "Table name", choices = "two_mab_test_run" ),
-                      selectInput("ts_mag_type", label = "Mag type", choices = c("LIS3MDL", "MLX90393", "Unidentified Magnetometer") ),
-                      # selectInput("ts_sensor", label = "Sensor number", choices = as.character(1:100), multiple = T, selected = '1'),
+                      selectInput("ts_mag_type", label = "Sensor patches", choices = c("MAB 1(LIS)" = "LIS3MDL", "MAB 2(MLX)" = "MLX90393", "MAB 3(Unidentified)" = "Unidentified Magnetometer") ),
                       uiOutput("ts_sensor_out"),
-                      selectInput("ts_varname", label = "Parameter", choices = c(x = "X(uT)",	y = "Y(uT)", z = "Z(uT)", t =	"T(*C)") ),
+                      selectInput("ts_varname", label = "Parameter", choices = c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)",
+                                                                                 "LLR", "Max_T", "LLR & Max_T") ),
                       hr(),
                       dateInput(inputId = "ts_daterange1", label = "From date", value = Sys.Date() - 365, width = "80%"),
                       sliderInput(
@@ -117,16 +100,48 @@ ts_card_tab <- bs4TabItem(
                         ),
                       actionButton("ts_action", "Submit", icon = icon("refresh"),
                                    style = "color: #fff; background-color: #337ab7; border-color: #2e6da4")
-                        
+                      
+
                     ),
                     mainPanel(
-                      h6("Timeseries title placeholder"),
+                      h5("Timeseries title placeholder"),
                       hr(),
-                      # dataTableOutput("ts_data"),
-                      # plotlyOutput("ts_plot"),
                       dygraphOutput("ts_dy_plot", height = "700px", width = "auto"),
                       hr(),
-                      h6("Sample data"),
+                      h5("Sensor patch description"),
+                      fluidRow(
+                      shiny::column(width = 3,
+                                             # h6(strong("Site-image of sensor")),
+                      uiOutput("ts_site_img")
+                      # tags$img(src = "LIS.jpg", height = '200px', width = '300px' )
+                      ),
+                      shiny::column(
+                        width = 3,
+                        h6(strong("Attributes")),
+                        DTOutput("ts_img_attr")
+                      ),
+                      shiny::column(
+                        width = 3,
+                        textAreaInput(
+                          "ts_img_remarks",
+                          "Comments",
+                          value = "Free text",
+                          width = "300px",
+                          height = "200px"
+                        )
+                      ),
+                      shiny::column(
+                        width = 3,
+                        fileInput("ts_new_img", "Upload a new site-image", accept = c("jpg", "png", "PNG", "JPG")),
+                        br(),
+                        br(),
+                        actionButton("ts_img_save", label = "Save", icon = icon("save"), style = "color: #fff; background-color: #000104; border-color: #2e6da4" )
+                      )
+                      ),
+                      hr(),
+                      h5("Sample data"),
+                      # checkboxInput("showdata", "Show data", value = F),
+                      shinyWidgets::prettySwitch(inputId = "showdata", "Show sample data", value = F, status = "success", fill = T),
                       dataTableOutput("ts_data"),
                       width = 10
                     )
@@ -367,642 +382,6 @@ social_cards_tab <- bs4TabItem(
   )
 )
 
-# tab_cards_tab ----
-tab_cards_tab <- bs4TabItem(
-  tabName = "tabcards",
-  fluidRow(
-    column(
-      width = 6,
-      bs4TabCard(
-        title = "A card with tabs",
-        elevation = 2,
-        id = "tabcard1",
-        width = 12,
-        collapsible = FALSE, 
-        closable = FALSE,
-        bs4TabPanel(
-          tabName = "Tab 1",
-          active = FALSE,
-          "A wonderful serenity has taken possession of my entire soul,
-          like these sweet mornings of spring which I enjoy with my
-          whole heart. I am alone, and feel the charm of existence in
-          this spot, which was created for the bliss of souls like mine.
-          I am so happy, my dear friend, so absorbed in the exquisite sense
-          of mere tranquil existence, that I neglect my talents. I should be
-          incapable of drawing a single stroke at the present moment; and yet
-          I feel that I never was a greater artist than now"
-        ),
-        bs4TabPanel(
-          tabName = "Tab 2",
-          active = TRUE,
-          "The European languages are members of the same family.
-          Their separate existence is a myth. For science, music,
-          sport, etc, Europe uses the same vocabulary. The languages
-          only differ in their grammar, their pronunciation and their
-          most common words. Everyone realizes why a new common
-          language would be desirable: one could refuse to pay expensive
-          translators. To achieve this, it would be necessary to have
-          uniform grammar, pronunciation and more common words. If several
-          languages coalesce, the grammar of the resulting language is
-          more simple and regular than that of the individual languages."
-        ),
-        bs4TabPanel(
-          tabName = "Tab 3",
-          active = FALSE,
-          "Lorem Ipsum is simply dummy text of the printing and
-          typesetting industry. Lorem Ipsum has been the industry's
-          standard dummy text ever since the 1500s, when an unknown
-          printer took a galley of type and scrambled it to make a
-          type specimen book. It has survived not only five centuries,
-          but also the leap into electronic typesetting, remaining
-          essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages,
-          and more recently with desktop publishing software like Aldus
-          PageMaker including versions of Lorem Ipsum."
-        )
-      )
-    ),
-    column(
-      width = 6,
-      bs4TabCard(
-        title = "A card with tabs on right",
-        side = "right",
-        id = "tabcard2",
-        elevation = 2,
-        width = 12,
-        status = "warning",
-        tabStatus = c("dark", "danger", "primary"),
-        maximizable = TRUE,
-        collapsible = TRUE, 
-        closable = TRUE,
-        bs4TabPanel(
-          tabName = "Tab 4",
-          active = FALSE,
-          "A wonderful serenity has taken possession of my entire soul,
-          like these sweet mornings of spring which I enjoy with my
-          whole heart. I am alone, and feel the charm of existence in
-          this spot, which was created for the bliss of souls like mine.
-          I am so happy, my dear friend, so absorbed in the exquisite sense
-          of mere tranquil existence, that I neglect my talents. I should be
-          incapable of drawing a single stroke at the present moment; and yet
-          I feel that I never was a greater artist than now"
-        ),
-        bs4TabPanel(
-          tabName = "Tab 5",
-          active = TRUE,
-          "The European languages are members of the same family.
-          Their separate existence is a myth. For science, music,
-          sport, etc, Europe uses the same vocabulary. The languages
-          only differ in their grammar, their pronunciation and their
-          most common words. Everyone realizes why a new common
-          language would be desirable: one could refuse to pay expensive
-          translators. To achieve this, it would be necessary to have
-          uniform grammar, pronunciation and more common words. If several
-          languages coalesce, the grammar of the resulting language is
-          more simple and regular than that of the individual languages."
-        ),
-        bs4TabPanel(
-          tabName = "Tab 6",
-          active = FALSE,
-          "Lorem Ipsum is simply dummy text of the printing and
-          typesetting industry. Lorem Ipsum has been the industry's
-          standard dummy text ever since the 1500s, when an unknown
-          printer took a galley of type and scrambled it to make a
-          type specimen book. It has survived not only five centuries,
-          but also the leap into electronic typesetting, remaining
-          essentially unchanged. It was popularised in the 1960s with
-          the release of Letraset sheets containing Lorem Ipsum passages,
-          and more recently with desktop publishing software like Aldus
-          PageMaker including versions of Lorem Ipsum."
-        )
-      )
-    )
-  ),
-  br(), br(),
-  fluidRow(
-    # manually inserted panels
-    column(
-      width = 6,
-      bs4TabSetPanel(
-        id = "tabcard",
-        side = "left",
-        bs4TabPanel(
-          tabName = "Tab 1", 
-          active = FALSE,
-          "Content 1"
-        ),
-        bs4TabPanel(
-          tabName = "Tab 2", 
-          active = TRUE,
-          "Content 2"
-        ),
-        bs4TabPanel(
-          tabName = "Tab 3", 
-          active = FALSE,
-          "Content 3"
-        )
-      )
-    ),
-    
-    # programmatically inserted panels
-    column(
-      width = 6,
-      bs4TabSetPanel(
-        id = "tabset",
-        side = "left",
-        tabStatus = "warning",
-        .list = lapply(1:3, function(i) {
-          bs4TabPanel(
-            tabName = paste0("Tab", i), 
-            active = FALSE,
-            paste("Content", i)
-          )
-        })
-      )
-    )
-  ),
-  br(), br(),
-  # Vertical panels
-  fluidRow(
-    column(
-      width = 6,
-      # vertical tabset
-      bs4TabSetPanel(
-        id = "verttabset",
-        side = "left",
-        vertical = TRUE,
-        .list = lapply(1:3, function(i) {
-          bs4TabPanel(
-            tabName = paste0("Tab", i), 
-            active = FALSE,
-            paste("Content", i)
-          )
-        })
-      )
-    ),
-    column(
-      width = 6,
-      # vertical tabset
-      bs4TabSetPanel(
-        id = "verttabset2",
-        side = "right",
-        vertical = TRUE,
-        .list = lapply(1:3, function(i) {
-          bs4TabPanel(
-            tabName = paste0("Tab", i), 
-            active = FALSE,
-            paste("Content", i)
-          )
-        })
-      )
-    )
-  )
-)
-
-
-# sortable_cards_tab ----
-sortable_cards_tab <- bs4TabItem(
-  tabName = "sortablecards",
-  fluidRow(
-    lapply(1:3, FUN = function(i) {
-      bs4Sortable(
-        width = 4,
-        p(class = "text-center", paste("Column", i)),
-        lapply(1:2, FUN = function(j) {
-          bs4Card(
-            title = paste0("I am the ", j,"-th card of the ", i, "-th column"), 
-            width = 12,
-            "Click on my header"
-          )
-        })
-      )
-    })
-  )
-)
-
-
-# statsboxes_tab ----
-statsboxes_tab <- bs4TabItem(
-  tabName = "statsboxes",
-  fluidRow(
-    bs4Card(
-      solidHeader = FALSE,
-      title = "Card with descriptionBlock",
-      background = NULL,
-      width = 6,
-      status = "danger",
-      footer = fluidRow(
-        column(
-          width = 6,
-          descriptionBlock(
-            number = "17%", 
-            number_color = "success", 
-            number_icon = "fa fa-caret-up",
-            header = "$35,210.43", 
-            text = "TOTAL REVENUE", 
-            right_border = TRUE,
-            margin_bottom = FALSE
-          )
-        ),
-        column(
-          width = 6,
-          descriptionBlock(
-            number = "18%", 
-            number_color = "danger", 
-            number_icon = "fa fa-caret-down",
-            header = "1200", 
-            text = "GOAL COMPLETION", 
-            right_border = FALSE,
-            margin_bottom = FALSE
-          )
-        )
-      )
-    ),
-    bs4Card(
-      title = "Box with right pad",
-      status = "warning",
-      fluidRow(
-        column(width = 6),
-        column(
-          width = 6,
-          cardPad(
-            color = "info",
-            descriptionBlock(
-              header = "8390", 
-              text = "VISITS", 
-              right_border = FALSE,
-              margin_bottom = TRUE
-            ),
-            descriptionBlock(
-              header = "30%", 
-              text = "REFERRALS", 
-              right_border = FALSE,
-              margin_bottom = TRUE
-            ),
-            descriptionBlock(
-              header = "70%", 
-              text = "ORGANIC", 
-              right_border = FALSE,
-              margin_bottom = FALSE
-            )
-          )
-        )
-      )
-    )
-  )
-)
-
-
-# boxes_tab ----
-boxes_tab <- bs4TabItem(
-  tabName = "boxes",
-  fluidRow(
-    bs4Box(
-      height = "600px",
-      title = "Box 1",
-      bs4Ribbon(
-        text = "Plot 1",
-        status = "success"
-      ),
-      plotlyOutput("plot2")
-    ),
-    bs4Box(
-      height = "600px",
-      title = "Box 2",
-      bs4Ribbon(
-        text = "Plot 2",
-        status = "danger",
-        size = "xl"
-      ),
-      plotlyOutput("plot3")
-    )
-  )
-)
-
-
-
-# value_boxes_tab ----
-value_boxes_tab <- bs4TabItem(
-  tabName = "valueboxes",
-  h4("Value Boxes"),
-  fluidRow(
-    bs4ValueBox(
-      value = 150,
-      subtitle = "New orders",
-      status = "primary",
-      icon = "shopping-cart",
-      href = "#"
-    ),
-    bs4ValueBox(
-      elevation = 4,
-      value = "53%",
-      subtitle = "New orders",
-      status = "danger",
-      icon = "cogs"
-    ),
-    bs4ValueBox(
-      value = "44",
-      subtitle = "User Registrations",
-      status = "warning",
-      icon = "sliders"
-    ),
-    bs4ValueBox(
-      value = "53%",
-      subtitle = "Bounce rate",
-      status = "success",
-      icon = "database"
-    )
-  ),
-  h4("Info Boxes"),
-  fluidRow(
-    bs4InfoBox(
-      tabName = "cardsAPI",
-      title = "Navigate to Cards API section",
-      value = 1410,
-      icon = "laptop-code"
-    ),
-    bs4InfoBox(
-      tabName = "colors",
-      title = "Navigate to colors section",
-      status = "info",
-      value = 240,
-      icon = "tint"
-    ),
-    bs4InfoBox(
-      title = "Comments",
-      gradientColor = "danger",
-      value = 41410,
-      icon = "comments"
-    )
-  )
-)
-
-
-# gallery_1_tab ----
-gallery_1_tab <- bs4TabItem(
-  tabName = "gallery1",
-  fluidRow(
-    bs4Card(
-      title = "Accordions",
-      footer = tagList(
-        h4("There is an accordion in the footer!"),
-        bs4Accordion(
-          id = "accordion1",
-          bs4AccordionItem(
-            id = "item1",
-            title = "Item 1", 
-            status = "danger",
-            "Anim pariatur cliche reprehenderit, enim 
-            eiusmod high life accusamus terry richardson ad 
-            squid. 3 wolf moon officia aute, non cupidatat 
-            skateboard dolor brunch. Food truck quinoa nesciunt 
-            laborum eiusmod. Brunch 3 wolf moon tempor, sunt 
-            aliqua put a bird on it squid single-origin coffee 
-            nulla assumenda shoreditch et. Nihil anim keffiyeh 
-            helvetica, craft beer labore wes anderson cred 
-            nesciunt sapiente ea proident. Ad vegan excepteur 
-            butcher vice lomo. Leggings occaecat craft beer farm-to-table, 
-            raw denim aesthetic synth nesciunt you probably haven't 
-            heard of them accusamus labore sustainable VHS"
-          ),
-          bs4AccordionItem(
-            id = "item2",
-            title = "Item 2", 
-            status = "warning",
-            "Anim pariatur cliche reprehenderit, enim 
-            eiusmod high life accusamus terry richardson ad 
-            squid. 3 wolf moon officia aute, non cupidatat 
-            skateboard dolor brunch. Food truck quinoa nesciunt 
-            laborum eiusmod. Brunch 3 wolf moon tempor, sunt 
-            aliqua put a bird on it squid single-origin coffee 
-            nulla assumenda shoreditch et. Nihil anim keffiyeh 
-            helvetica, craft beer labore wes anderson cred 
-            nesciunt sapiente ea proident. Ad vegan excepteur 
-            butcher vice lomo. Leggings occaecat craft beer farm-to-table, 
-            raw denim aesthetic synth nesciunt you probably haven't 
-            heard of them accusamus labore sustainable VHS"
-          )
-        )
-      )
-    ),
-    bs4Card(
-      title = "Carousel",
-      bs4Carousel(
-        id = "mycarousel",
-        width = 12,
-        bs4CarouselItem(
-          active = TRUE,
-          src = "https://placehold.it/900x500/39CCCC/ffffff&text=I+Love+Bootstrap"
-        ),
-        bs4CarouselItem(
-          active = FALSE,
-          src = "https://placehold.it/900x500/3c8dbc/ffffff&text=I+Love+Bootstrap"
-        ),
-        bs4CarouselItem(
-          active = FALSE,
-          src = "https://placehold.it/900x500/f39c12/ffffff&text=I+Love+Bootstrap"
-        )
-      )
-    )
-  ),
-  fluidRow(
-    bs4Card(
-      title = "bs4Quote",
-      fluidRow(
-        bs4Quote("Blablabla", status = "indigo"),
-        bs4Quote("Blablabla", status = "danger"),
-        bs4Quote("Blablabla", status = "teal"),
-        bs4Quote("Blablabla", status = "orange"),
-        bs4Quote("Blablabla", status = "warning"),
-        bs4Quote("Blablabla", status = "fuchsia")
-      )
-    )
-  ),
-  fluidRow(
-    bs4Card(
-      title = "Progress bars",
-      footer = tagList(
-        bs4ProgressBar(
-          value = 5,
-          striped = FALSE,
-          status = "info"
-        ),
-        bs4ProgressBar(
-          value = 5,
-          striped = TRUE,
-          status = "warning"
-        )
-      ),
-      bs4ProgressBar(
-        value = 80,
-        vertical = TRUE,
-        status = "success"
-      ),
-      bs4ProgressBar(
-        value = 100,
-        vertical = TRUE,
-        striped = TRUE,
-        status = "danger"
-      )
-    ),
-    bs4Card(
-      title = "Alerts",
-      elevation = 4,
-      bs4Alert(
-        title = "Be Careful!",
-        status = "danger",
-        closable = TRUE,
-        width = 12,
-        "Danger alert preview. This alert is dismissable. 
-                A wonderful serenity has taken possession of my entire soul, 
-                like these sweet mornings of spring which 
-                I enjoy with my whole heart."
-      )
-    )
-  ),
-  fluidRow(
-    bs4Card(
-      title = "Callouts",
-      bs4Callout(
-        title = "I am a danger callout!",
-        elevation = 4,
-        status = "danger",
-        width = 12,
-        "There is a problem that we need to fix. 
-                A wonderful serenity has taken possession of 
-                my entire soul, like these sweet mornings of 
-                spring which I enjoy with my whole heart."
-      )
-    ),
-    bs4Card(
-      title = "Loading State",
-      bs4Loading()
-    )
-  ),
-  fluidRow(
-    bs4Card(
-      title = "Timeline",
-      bs4Timeline(
-        width = 12,
-        reversed = TRUE,
-        bs4TimelineEnd(status = "danger"),
-        bs4TimelineLabel("10 Feb. 2014", status = "info"),
-        bs4TimelineItem(
-          elevation = 4, 
-          title = "Item 1",
-          icon = "gears",
-          status = "success",
-          time = "now",
-          footer = "Here is the footer",
-          "This is the body"
-        ),
-        bs4TimelineItem(
-          title = "Item 2",
-          border = FALSE
-        ),
-        bs4TimelineLabel("3 Jan. 2014", status = "primary"),
-        bs4TimelineItem(
-          elevation = 2,
-          title = "Item 3",
-          icon = "paint-brush",
-          status = "warning",
-          bs4TimelineItemMedia(src = "https://placehold.it/150x100"),
-          bs4TimelineItemMedia(src = "https://placehold.it/150x100")
-        ),
-        bs4TimelineStart(status = "danger")
-      )
-    ),
-    bs4Timeline(
-      width = 6,
-      bs4TimelineEnd(status = "danger"),
-      bs4TimelineLabel("10 Feb. 2014", status = "info"),
-      bs4TimelineItem(
-        elevation = 4, 
-        title = "Item 1",
-        icon = "gears",
-        status = "success",
-        time = "now",
-        footer = "Here is the footer",
-        "This is the body"
-      ),
-      bs4TimelineItem(
-        title = "Item 2",
-        border = FALSE
-      ),
-      bs4TimelineLabel("3 Jan. 2014", status = "primary"),
-      bs4TimelineItem(
-        elevation = 2,
-        title = "Item 3",
-        icon = "paint-brush",
-        status = "warning",
-        bs4TimelineItemMedia(src = "https://placehold.it/150x100"),
-        bs4TimelineItemMedia(src = "https://placehold.it/150x100")
-      ),
-      bs4TimelineStart(status = "danger")
-    )
-  ),
-  br(),
-  fluidRow(
-    bs4Card(
-      title = "Stars",
-      bs4Stars(grade = 5),
-      bs4Stars(grade = 5, status = "success"),
-      bs4Stars(grade = 1, status = "danger"),
-      bs4Stars(grade = 3, status = "info")
-    ),
-    bs4Card(
-      title = "Attachment example",
-      attachmentBlock(
-        src = "https://adminlte.io/themes/dev/AdminLTE/dist/img/photo1.png",
-        title = "Test",
-        title_url = "http://google.com",
-        "This is the content"
-      )
-    )
-  ),
-  h4("bs4Table"),
-  fluidRow(
-    bs4Table(
-      cardWrap = TRUE,
-      bordered = TRUE,
-      striped = TRUE,
-      headTitles = c(
-        "PROJECT",
-        "BUDGET",
-        "STATUS",
-        "USERS",
-        "COMPLETION",
-        ""
-      ),
-      bs4TableItems(
-        bs4TableItem("bs4 Design System"),
-        bs4TableItem(dataCell = TRUE, "$2,500 USD"),
-        bs4TableItem(
-          dataCell = TRUE, 
-          bs4Badge(
-            "Pending",
-            position = "right",
-            status = "danger",
-            rounded = TRUE
-          )
-        ),
-        bs4TableItem(
-          progressBar(id = "pb1", value = 50, size = "xxs")
-        ),
-        bs4TableItem(
-          dataCell = TRUE, 
-          "test"
-        ),
-        bs4TableItem(
-          actionButton(
-            "go",
-            "Go"
-          )
-        )
-      )
-    )
-  )
-)
 
 
 # gallery_2_tab ----
@@ -1093,20 +472,4 @@ gallery_2_tab <- bs4TabItem(
       )
     )
   )
-)
-
-# color_tab ----
-colors_tab <- bs4TabItem(
-  tabName = "colors",
-  lapply(seq_along(statusColors), function(i) {
-    fluidRow(
-      bs4Card(
-        status = statusColors[i], 
-        title = paste(statusColors[i], "card"),
-        width = 12,
-        closable = FALSE,
-        collapsible = FALSE
-      )
-    )
-  })
 )

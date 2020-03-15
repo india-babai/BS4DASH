@@ -62,7 +62,7 @@ dat <-
                            where = "time < '2020-01-10 16:53:56' and time > '2020-01-07 15:53:56'
                            and mag_type = 'MLX90393' and Sensor = '1' or Sensor = '2' or Sensor = '3' ",
                            group_by = "mag_type, Sensor",
-                           limit = 2000,
+                           limit = 20,
                            return_xts = F)[[1]]
 # 12:23:58
 

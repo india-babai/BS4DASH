@@ -36,9 +36,10 @@ server <-  function(input, output, session) {
                 selected = as.character(choices)[1])
     
   })
+  
   sensor_filter <- reactive({
     sensors <- input$ts_sensor
-    
+
     s1 <- NULL
     if (length(sensors) > 0) {
       for (s in sensors) {
@@ -46,12 +47,13 @@ server <-  function(input, output, session) {
       }
       s1 <- substring(s1, 1, nchar(s1) - 3)
     }
-    # removing the last or
     s1
   })
   
   
-  ts_dat <- eventReactive(input$ts_action,{
+  ts_dat <- 
+    # eventReactive(input$ts_action,{
+    reactive({
     temp <- influxdbr::influx_select(
       con(),
       db = "example",
@@ -75,32 +77,96 @@ server <-  function(input, output, session) {
     # final <- temp[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
     final <- temp
     final
-    
   })
-  observe({
-    if (sum(sapply(ts_dat(), function(x)
-      all(is.na(x)))) == 5) {
-      showModal(
-        modalDialog(
-          title = "ERROR",
-          "No records returned. Try changing the date/time",
-          easyClose = TRUE,
-          footer = NULL
-        )
-      )
-    }
-  })
+  # }, ignoreNULL = T)
+  
+  
+  
+  
+  
+  # observe({
+  #   if (sum(sapply(ts_dat(), function(x)
+  #     all(is.na(x)))) == 5) {
+  #     showModal(
+  #       modalDialog(
+  #         title = "ERROR",
+  #         "No records returned. Try changing the date/time",
+  #         easyClose = TRUE,
+  #         footer = NULL
+  #       )
+  #     )
+  #   }
+  # })
   
 
   output$ts_dy_plot <- dygraphs::renderDygraph({
-    tsdyplot(data = ts_dat(), var = input$ts_varname)
+    if (input$ts_varname %in% c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)")) {
+      tsdyplot(data = ts_dat(), var = input$ts_varname, title_comp = "Sensor patch")
+    }
+    else {
+      NULL
+    }
+
   })
+
   
-  
-  output$ts_data <- renderDataTable({
+  output$ts_site_img <- renderUI({
+    if (input$ts_mag_type == "LIS3MDL") {
+      img_name <- "LIS"
+    }
+    else if (input$ts_mag_type == "MLX90393") {
+      img_name <- "MLX"
+    }
+    else {
+      img_name <- "OTH"
+    }
     
-    temp <- ts_dat()[,c("series_names", "Sensor", "mag_type", "time","X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)")]
-    head(temp,5)
+    tagList(
+    h6(strong(paste0("Site-image of sensor (", img_name,")"))),
+    tags$img(src = paste0(img_name,".jpg"), height = '200px', width = '300px' )
+    )
+    
+    })
+  
+  output$ts_img_attr <- 
+    
+    renderDT({
+      attr <-
+        data.frame(
+          feature = c("Pipe diameter(m)", "Location", "Orientation"),
+          value = c("1", "London", "North-West")
+        )
+      
+      attr %>% datatable(
+        editable = T,
+        rownames = F,
+        options = list(
+          initComplete = JS(
+            "function(settings, json) {",
+            "$('body').css({'font-family': 'Calibri'});",
+            "}"
+          ),
+          dom = 't', lengthChange = FALSE, columns.orderable = F
+        )
+      ) %>% formatStyle('feature', backgroundColor = '#ADA7A7')
+    })
+  
+  
+  
+  output$ts_data <-
+    renderDataTable({
+      if (input$showdata) {
+        temp <-
+          ts_dat()[, c("series_names",
+                       "Sensor",
+                       "mag_type",
+                       "time",
+                       "X(uT)",
+                       "Y(uT)",
+                       "Z(uT)",
+                       "T(*C)")]
+        head(temp, 5)
+      }
     })
   ####Time series: End ####
   

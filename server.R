@@ -90,25 +90,34 @@ server <-  function(input, output, session) {
   
   observe({
     if (is.null(ts_dat())) {
-      showModal(
-        modalDialog(
-          title = "ERROR",
-          "No records returned. Try changing the date/time",
-          easyClose = TRUE,
-          footer = NULL
-        )
-      )
+      shinyalert::shinyalert(title = "Error", text = "No data fetched. PLease change the inputs", 
+                             type = "error", closeOnEsc = T, closeOnClickOutside = T, timer = 0)
     }
   })
+ observeEvent(input$ts_mag_type,{
+   # showModal(
+   #   modalDialog(
+   #     title = "Press SUBMIT",
+   #     "Press submitt button in the panel on right to see updated graph!",
+   #     easyClose = TRUE, fade = T,
+   #     footer = NULL
+   #   )
+   # )
+   shinyalert::shinyalert(title = "Press SUBMIT", 
+                          text = "Click on submitt button in the panel on right to see updated graph!",
+                          type = "info", closeOnClickOutside = T, closeOnEsc = T, showConfirmButton = T, timer = 3000)
+   
+ }, ignoreInit = F )
   
 
   output$ts_dy_plot <- dygraphs::renderDygraph({
     if (!is.null(ts_dat())) {
+      mag <- ts_dat()[["mag_type"]][1]
       if (input$ts_varname %in% c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)")) {
         tsdyplot(
           data = ts_dat(),
           var = input$ts_varname,
-          title_comp = "Sensor patch"
+          title_comp = mag
         )
       }
       # For LLR, Max_T and LLR & Max_T the graphs to be added
@@ -321,6 +330,66 @@ server <-  function(input, output, session) {
   
   #### Track defect: Beginning ####
   
+  # Similar fetching of data was used earlier as well: This calls for modularizing the code
+  # This need to be updated as, LLR/Max depth will not depend on sensor
+  d_frm <- callModule(fromTo, "dfct_from")
+  d_to <- callModule(fromTo, "dfct_to")
+  
+  dfct_dat <- 
+    eventReactive(input$dfct_action,{
+      # reactive({
+      temp <- influxdbr::influx_select(
+        con(),
+        db = "example",
+        measurement = "two_mab_test_run",
+        field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"',
+        where = paste(
+          "time >= ",
+          paste0("'", d_frm(), "'"),
+          "and time <= ",
+          paste0("'", d_to(), "'"),
+          "and mag_type = ",
+          paste0("'", "LIS3MDL", "'")
+        ),
+        group_by = "mag_type, Sensor",
+        limit = 100,
+        return_xts = F
+      )[[1]]
+      
+      if (sum(sapply(temp, function(x)
+        all(is.na(x)))) == 5) {
+        final <- NULL
+      }
+      else {
+        final <- temp
+      }
+      final
+      # })
+    }, ignoreNULL = T)
+  
+  output$dfct_dt <- 
+    renderDataTable({
+        temp <-
+          dfct_dat()[, c("series_names",
+                       "Sensor",
+                       "mag_type",
+                       "time",
+                       "X(uT)",
+                       "Y(uT)",
+                       "Z(uT)",
+                       "T(*C)")]
+        head(temp, 5)
+
+    })
+  
+ 
+  # p2 <- reactive( hist(rnorm(input$no_hmaps*100)))
+  
+  output$dfct_plot <- renderPlot({
+    p1 <- levelplot(volcano, col.regions = terrain.colors(100, alpha = 01))
+    p2 <- gridExtra::grid.arrange(p1,p1,p1,p1,p1,p1, nrow = 2)
+    p2
+  })
   
   
   #### Track defect: End ####
@@ -406,23 +475,7 @@ server <-  function(input, output, session) {
     p <- layout(s, showlegend = FALSE)
   })
   
-  
-  # observeEvent(input$current_tab, {
-  #   if (input$current_tab == "cards") {
-  #     showModal(
-  #       modalDialog(
-  #         title = "This event only triggers for the first tab!",
-  #         "You clicked me! This event is the result of
-  #         an input bound to the menu. By adding an id to the
-  #         bs4SidebarMenu, input$id will give the currently selected
-  #         tab. This is useful to trigger some events.",
-  #         easyClose = TRUE,
-  #         footer = NULL
-  #       )
-  #     )
-  #   }
-  # })
-  
+
   
   output$cardAPIPlot <- renderPlot({
     if (input$mycard$maximized) {

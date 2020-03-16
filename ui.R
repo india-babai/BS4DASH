@@ -68,7 +68,7 @@ ui <-  bs4DashPage(
       ),
       bs4SidebarMenuItem(
         "Track defect",
-        tabName = "hgrid",
+        tabName = "tdefect",
         icon = "cube"
       ),
       bs4SidebarMenuItem(
@@ -110,8 +110,8 @@ ui <-  bs4DashPage(
       ts_card_tab,
       basic_cards_tab,
       cards_api_tab,
+      track_defect_tab,
       social_cards_tab,
-      # gallery_1_tab,
       gallery_2_tab
     )
   )

@@ -11,8 +11,12 @@ library(imager)
 library(scales)
 library(shinyjs)
 library(dygraphs)
+library(shinyalert)
+
+
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
+source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/from_to_module.R")
 datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
 
 # blank table
@@ -61,10 +65,11 @@ statusColors <- c(
 ts_card_tab <- bs4TabItem(
   tabName = "timeseries",
     fluidPage(
+      useShinyalert(),
       useShinyjs(),
       sidebarLayout(position = "right",
                         sidebarPanel(width = 2,
-                      h6("Customizations"),
+                      h6(icon("wrench"),strong("Customizations")),
                       hr(),
                       selectInput("ts_measurement", label = "Table name", choices = "two_mab_test_run" ),
                       selectInput("ts_mag_type", label = "Sensor patches", choices = c("MAB 1(LIS)" = "LIS3MDL", "MAB 2(MLX)" = "MLX90393", "MAB 3(Unidentified)" = "Unidentified Magnetometer") ),
@@ -149,7 +154,6 @@ ts_card_tab <- bs4TabItem(
                     )
                     
       )
-      # ,theme = shinytheme(theme = "flatly")
     )
 )
   
@@ -181,11 +185,6 @@ basic_cards_tab <- bs4TabItem(
           plotlyOutput("plot_heatmap_y"),
           br(),hr(),
           plotlyOutput("plot_heatmap_z")
-          # br(),hr(),
-          # plotlyOutput("plot_heatmap_t")
-          # h1("data will be here"),
-          # dataTableOutput("datatable")
-   
         , width = 10
       ),
       position = "right"
@@ -248,6 +247,75 @@ cards_api_tab <- bs4TabItem(
   # submitButton(text = "Submit", icon = icon("refresh"))
   
 )
+
+
+# Track defect ----
+track_defect_tab <- bs4TabItem(tabName = "tdefect",
+                               fluidPage(
+                                 sidebarLayout(
+                                   position = "right",
+                                   sidebarPanel =
+                                     sidebarPanel(
+                                       width = 2,
+                                       h6(icon("cogs"), strong("Settings")),
+                                       fromToInput("dfct_from", offset = 365),
+                                       fromToInput("dfct_to", label = "To date", offset = 0),
+                                       numericInput(
+                                         "no_hmaps",
+                                         "Frequency of snapshots",
+                                         value = 5,
+                                         min = 1,
+                                         max = 10,
+                                         step = 1
+                                       ),
+                                       actionButton("dfct_action", "Submit", icon = icon("refresh"),
+                                                    style = "color: #fff; background-color: #337ab7; border-color: #2e6da4")
+                          
+                                     ),
+                                   mainPanel = mainPanel(width = 10,
+                                                         
+                                                         bs4Card(
+
+                                                           title = "Progression of corrosion over time",
+                                                           closable = TRUE,
+                                                           maximizable = TRUE,
+                                                           width = 12,
+                                                           status = "secondary",
+                                                           solidHeader = FALSE,
+                                                           collapsible = TRUE,
+                                                           plotOutput("dfct_plot")
+                                                         ),
+                                                         
+                                                         bs4Card(
+                                                           
+                                                           title = "Graph of LLR, Threshold, Max of depth profile",
+                                                           closable = TRUE,
+                                                           maximizable = TRUE,
+                                                           width = 12,
+                                                           status = "secondary",
+                                                           solidHeader = FALSE,
+                                                           collapsible = TRUE,
+                                                           collapsed = T,
+                                                           plotOutput("dfct_plot2")
+                                                         ),
+                                                        
+                                                         bs4Card(
+                                                           inputId = "mycard",
+                                                           title = "Data",
+                                                           closable = TRUE,
+                                                           maximizable = TRUE,
+                                                           width = 12,
+                                                           status = "secondary",
+                                                           solidHeader = FALSE,
+                                                           collapsible = TRUE,
+                                                           DTOutput("dfct_dt")
+
+
+                                                           )
+                                                        
+                                                         )
+                                 )
+                               ))
 
 
 

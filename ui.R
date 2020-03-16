@@ -67,19 +67,22 @@ ui <-  bs4DashPage(
         icon = "cube"
       ),
       bs4SidebarMenuItem(
-        "Social cards",
+        "Track defect",
+        tabName = "hgrid",
+        icon = "cube"
+      ),
+      bs4SidebarMenuItem(
+        "Simulation input data",
+        tabName = "siminput",
+        icon = "cube"
+      ),
+      
+      bs4SidebarHeader("Social network"),
+      bs4SidebarMenuItem(
+        "Feedbacks",
         tabName = "socialcards",
         icon = "id-card"
       ),
-      
-      bs4SidebarHeader("Colors"),
-      
-      bs4SidebarMenuItem(
-        "Colors",
-        tabName = "colors",
-        icon = "tint"
-      ),
-      
       bs4SidebarHeader("BS4 gallery"),
       bs4SidebarMenuItem(
         text = "Galleries",
@@ -88,21 +91,7 @@ ui <-  bs4DashPage(
         bs4SidebarMenuSubItem(
           text = HTML(
             paste(
-              "Gallery 1", 
-              bs4Badge(
-                "new", 
-                position = "right", 
-                status = "danger"
-              )
-            )
-          ),
-          tabName = "gallery1",
-          icon = "circle-thin"
-        ),
-        bs4SidebarMenuSubItem(
-          text = HTML(
-            paste(
-              "Gallery 2", 
+              "Gallery", 
               bs4Badge(
                 "!", 
                 position = "right", 
@@ -122,8 +111,7 @@ ui <-  bs4DashPage(
       basic_cards_tab,
       cards_api_tab,
       social_cards_tab,
-      colors_tab,
-      gallery_1_tab,
+      # gallery_1_tab,
       gallery_2_tab
     )
   )

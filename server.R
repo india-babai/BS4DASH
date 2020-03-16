@@ -304,15 +304,6 @@ server <-  function(input, output, session) {
   })
   
   
-  # output$dt <-
-  #   DT::renderDT(
-  #     values$df,
-  #     editable = T,
-  #     rownames = F,
-  #     width = "80%",
-  #     escape = FALSE
-  #   )
-
   # https://stackoverflow.com/questions/56535488/how-to-download-editable-data-table-in-shiny
   output$dt <- 
     DT::renderDT(
@@ -326,6 +317,14 @@ server <-  function(input, output, session) {
   
   
   #### Table plots: End ####
+  
+  
+  #### Track defect: Beginning ####
+  
+  
+  
+  #### Track defect: End ####
+  
   
 
   output$bigPlot <- renderPlot({

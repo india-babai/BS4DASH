@@ -77,32 +77,9 @@ ts_card_tab <- bs4TabItem(
                       selectInput("ts_varname", label = "Parameter", choices = c("X(uT)",	"Y(uT)", "Z(uT)", "T(*C)",
                                                                                  "LLR", "Max_T", "LLR & Max_T") ),
                       hr(),
-                      dateInput(inputId = "ts_daterange1", label = "From date", value = Sys.Date() - 365, width = "80%"),
-                      sliderInput(
-                        "ts_time1",
-                        "",
-                        min = as.POSIXct("2017-01-01 00:00:00"),
-                        max = as.POSIXct("2017-01-01 23:59:59"),
-                        value = c(
-                          as.POSIXct("2017-01-01 12:00:00")
-                          # as.POSIXct("2017-01-01 18:00:00")
-                        ),
-                        timeFormat = "%T",
-                        step = 30
-                      ),
-                        dateInput(inputId = "ts_daterange2", label = "To date", value = Sys.Date(), width = "80%"),
-                        sliderInput(
-                          "ts_time2",
-                          "",
-                          min = as.POSIXct("2017-01-01 00:00:00"),
-                          max = as.POSIXct("2017-01-01 23:59:59"),
-                          value = c(
-                            as.POSIXct("2017-01-01 12:00:00")
-                            # as.POSIXct("2017-01-01 18:00:00")
-                          ),
-                          timeFormat = "%T",
-                          step = 30
-                        ),
+                      fromToInput("ts_daterange1", offset = 365), # Use of shiny module: Refer to 'from_to_module.R'
+                      fromToInput("ts_daterange2", label = "To date", offset = 0), # Use of shiny module: Refer to 'from_to_module.R'
+                      
                       actionButton("ts_action", "Submit", icon = icon("refresh"),
                                    style = "color: #fff; background-color: #337ab7; border-color: #2e6da4")
                       
@@ -161,7 +138,7 @@ ts_card_tab <- bs4TabItem(
 
 
 
-# basic_cards_tab ----
+# 3d heatmap tab ----
 basic_cards_tab <- bs4TabItem(
   tabName = "cards",
   fluidPage(

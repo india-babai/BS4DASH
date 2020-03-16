@@ -14,18 +14,8 @@ server <-  function(input, output, session) {
   
   
   #### Time series: Beginning ####
-  date_time_paste <- function(date, time){
-    # date should be in date format
-    # time should be in POSIXct format
-    time <- strftime(time, format = "%H:%M:%S")
-    paste0(date, " ",time)
-    }
-  
-  ts_dt1 <- reactive( date_time_paste(date = input$ts_daterange1, input$ts_time1))
-  ts_dt2 <- reactive( date_time_paste(date = input$ts_daterange2, input$ts_time2))
-  
-
-  
+  ts_dt1 <- callModule(fromTo, "ts_daterange1") # Use of shiny module: Refer to 'from_to_module.R'
+  ts_dt2 <- callModule(fromTo, "ts_daterange2") # Use of shiny module: Refer to 'from_to_module.R'
   output$ts_sensor_out <- renderUI({
     choices <- switch(input$ts_mag_type,
                       "LIS3MDL" = 1:100,

@@ -59,10 +59,10 @@ dat <-
                            measurement = measurement_name,
                            # field_keys = "X_ut, Y_ut, Z_ut, T_c", #Required for database 'example3'
                            field_keys = '"X(uT)",	"Y(uT)",	"Z(uT)",	"T(*C)"', #Required for database 'example'
-                           where = "time < '2020-01-10 16:53:56' and time > '2020-01-07 17:31:00'
-                           and mag_type = 'MLX90393' and Sensor = '1' or Sensor = '2' or Sensor = '3' ",
+                           where = "time < '2020-03-10 16:53:56' and time > '2020-01-07 17:31:00'
+                           and mag_type = 'LIS3MDL' and ( Sensor = '1' or Sensor = '2' or Sensor = '3' ) ",
                            group_by = "mag_type, Sensor",
-                           limit = 20,
+                           limit = 20000,
                            return_xts = F)[[1]]
 # 12:23:58
 

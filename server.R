@@ -16,25 +16,43 @@ server <-  function(input, output, session) {
   #### Time series: Beginning ####
   ts_dt1 <- callModule(fromTo, "ts_daterange1") # Use of shiny module: Refer to 'from_to_module.R'
   ts_dt2 <- callModule(fromTo, "ts_daterange2") # Use of shiny module: Refer to 'from_to_module.R'
+  
   output$ts_sensor_out <- renderUI({
     choices <- switch(input$ts_mag_type,
                       "LIS3MDL" = 1:100,
                       "MLX90393" = 201:300,
                       "Unidentified Magnetometer" = 401:500)
     
-    selectInput(inputId = "ts_sensor", label = "Sensor number", choices = as.character(choices), multiple = T,
+    selectInput(inputId = "ts_sensor", label = "Sensor number", choices = c("All",as.character(choices)), multiple = T,
                 selected = as.character(choices)[1])
     
   })
   
   sensor_filter <- reactive({
     sensors <- input$ts_sensor
-    s1 <- NULL
-    if (length(sensors) > 0) {
-      for (s in sensors) {
-        s1 <- paste0(s1," Sensor = ","'",s,"'", " OR ")
+    
+    if (sensors != "All") {
+      s1 <- NULL
+      if (length(sensors) > 0) {
+        for (s in sensors) {
+          s1 <- paste0(s1, " Sensor = ", "'", s, "'", " OR ")
+        }
+        s1 <- substring(s1, 1, nchar(s1) - 3)
       }
-      s1 <- substring(s1, 1, nchar(s1) - 3)
+    }
+    else {
+      choices_all <- switch(input$ts_mag_type,
+                        "LIS3MDL" = 1:100,
+                        "MLX90393" = 201:300,
+                        "Unidentified Magnetometer" = 401:500)
+      s1 <- NULL
+      if (length(sensors) > 0) {
+        for (s in choices_all) {
+          s1 <- paste0(s1, " Sensor = ", "'", s, "'", " OR ")
+        }
+        s1 <- substring(s1, 1, nchar(s1) - 3)
+      }
+      
     }
     s1
   })
@@ -43,6 +61,21 @@ server <-  function(input, output, session) {
   ts_dat <- 
     eventReactive(input$ts_action,{
     # reactive({
+      if (input$ts_sensor == "All") {
+        showModal(
+          modalDialog(
+            title = h3(icon("exclamation-triangle"),"Warning"),
+            "This could take several minutes as all sensors are selected",
+            easyClose = T,
+            fade = T
+            
+            
+            
+          )
+        )
+      }
+      
+      
     temp <- influxdbr::influx_select(
       con(),
       db = "example",
@@ -55,8 +88,9 @@ server <-  function(input, output, session) {
         paste0("'", ts_dt2(), "'"),
         "and mag_type = ",
         paste0("'", input$ts_mag_type, "'"),
-        "and ",
-        sensor_filter()
+        "and ( ",
+        sensor_filter(),
+        " )"
       ),
       group_by = "mag_type, Sensor",
       # limit = 1000,
@@ -80,24 +114,27 @@ server <-  function(input, output, session) {
   
   observe({
     if (is.null(ts_dat())) {
-      shinyalert::shinyalert(title = "Error", text = "No data fetched. PLease change the inputs", 
-                             type = "error", closeOnEsc = T, closeOnClickOutside = T, timer = 0)
+      shinyalert::shinyalert(
+        title = "Error",
+        text = "No data fetched. PLease change the inputs",
+        type = "error",
+        closeOnEsc = T,
+        closeOnClickOutside = T,
+        timer = 0
+      )
     }
   })
- observeEvent(input$ts_mag_type,{
-   # showModal(
-   #   modalDialog(
-   #     title = "Press SUBMIT",
-   #     "Press submitt button in the panel on right to see updated graph!",
-   #     easyClose = TRUE, fade = T,
-   #     footer = NULL
-   #   )
-   # )
-   shinyalert::shinyalert(title = "Press SUBMIT", 
-                          text = "Click on submitt button in the panel on right to see updated graph!",
-                          type = "info", closeOnClickOutside = T, closeOnEsc = T, showConfirmButton = T, timer = 3000)
-   
- }, ignoreInit = F )
+  observeEvent(input$ts_mag_type, {
+    shinyalert::shinyalert(
+      title = "Press SUBMIT",
+      text = "Click on submitt button in the panel on right to see updated graph!",
+      type = "info",
+      closeOnClickOutside = T,
+      closeOnEsc = T,
+      showConfirmButton = T,
+      timer = 1500
+    )
+  }, ignoreInit = T)
   
 
   output$ts_dy_plot <- dygraphs::renderDygraph({
@@ -110,7 +147,7 @@ server <-  function(input, output, session) {
           title_comp = mag
         )
       }
-      # For LLR, Max_T and LLR & Max_T the graphs to be added
+      # For LLR, Max_T and LLR & Max_T the graphs to be added here
       else {
         NULL
       }
@@ -129,12 +166,16 @@ server <-  function(input, output, session) {
       img_name <- "OTH"
     }
     
-    tagList(
-    h6(strong(paste0("Site-image of sensor (", img_name,")"))),
-    tags$img(src = paste0(img_name,".jpg"), height = '200px', width = '300px' )
-    )
+    tagList(h6(strong(
+      paste0("Site-image of sensor (", img_name, ")")
+    )),
+    tags$img(
+      src = paste0(img_name, ".jpg"),
+      height = '200px',
+      width = '300px'
+    ))
     
-    })
+  })
   
   output$ts_img_attr <- 
     
@@ -173,7 +214,7 @@ server <-  function(input, output, session) {
                        "Y(uT)",
                        "Z(uT)",
                        "T(*C)")]
-        head(temp, 5)
+        temp
       }
     })
   ####Time series: End ####
@@ -181,11 +222,13 @@ server <-  function(input, output, session) {
   
   
   #### Heatmap 3D: Beginning ####
+  date_time_paste <- function(date, time){
+    # date should be in date format
+    # time should be in POSIXct format
+    time <- strftime(time, format = "%H:%M:%S")
+    paste0(date, " ",time)
+  }
   datetime <- eventReactive(input$heatmap_action,{
-    # date <- input$date
-    # time <- strftime(input$time, format = "%H:%M:%S")
-    # datetime <- paste0(date, " ",time)
-    # datetime
     date_time_paste(input$date, input$time)
   })
   
@@ -229,15 +272,15 @@ server <-  function(input, output, session) {
   output$show_date_time <- renderText(paste("Date and time: ", datetime()))
   output$plot_heatmap_x <- renderPlotly({
     tempdat <- mgf_submit(dat(), "X_ut")
-    heatmap_3d(tempdat)
+    heatmap_3d(tempdat, wd = 600, ht = 400)
   })
   output$plot_heatmap_y <- renderPlotly({
     tempdat <- mgf_submit(dat(), "Y_ut")
-    heatmap_3d(tempdat)
+    heatmap_3d(tempdat, wd = 600, ht = 400)
   })
   output$plot_heatmap_z <- renderPlotly({
     tempdat <- mgf_submit(dat(), "Z_ut")
-    heatmap_3d(tempdat)
+    heatmap_3d(tempdat, wd = 1250, ht = 400)
   })
 
   #### Heatmap 3D: End ####

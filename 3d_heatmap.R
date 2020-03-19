@@ -11,7 +11,7 @@
 
 # output$all_stat_lineplot_1 =  renderPlotly({
 
-heatmap_3d <- function(mgf_submit_1){
+heatmap_3d <- function(mgf_submit_1, wd = 1000, ht = 450){
 
   trace1 <- list(
     uid = "e3b508",
@@ -105,8 +105,8 @@ heatmap_3d <- function(mgf_submit_1){
       )
     ),
     title = mgf_submit_1[[2]],
-    width = 1290,
-    height = 452,
+    width = wd,
+    height = ht,
     legend = list(font = list(color = "#D9D9D9"),
                   bgcolor = "#151516"),
     margin = list(

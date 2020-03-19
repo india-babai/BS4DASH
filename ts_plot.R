@@ -30,6 +30,7 @@ tsdyplot <- function(data, var, title_comp){
   
   dygraph(data = dat_xts, xlab = "Time (GMT)", ylab = var, main = paste0(var, " over time (", title_comp, ")")) %>% 
     dyOptions(fillGraph = F, fillAlpha = 0.1, axisLineWidth = 1.5) %>% 
+    dyLegend(show = "onmouseover", hideOnMouseOut = T) %>% 
     dyRangeSelector()
   })
   

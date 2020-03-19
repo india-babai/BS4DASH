@@ -12,6 +12,8 @@ library(scales)
 library(shinyjs)
 library(dygraphs)
 library(shinyalert)
+library(lattice)
+library(shinycssloaders)
 
 
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
@@ -55,6 +57,13 @@ statusColors <- c(
   "light"
 )
 
+# Intro tab
+intro_tab <- bs4TabItem(
+  tabName = "user_guide",
+  h3("Read Me"),
+  h4("Quick summary on how to use the app and where to find required information")
+  
+)
 
 # Time-series tab ----
     # InfluxDB Database contains many measurements
@@ -92,7 +101,14 @@ ts_card_tab <- bs4TabItem(
                       dygraphOutput("ts_dy_plot", height = "700px", width = "auto"), type = 1, color = "#991B1B"
                       ),
                       hr(),
-                      h5("Sensor patch description"),
+                      bs4Card(
+                        title = "Sensor patch description",
+                        status = "dark",
+                        width = 12,
+                        collapsible = T,
+                        collapsed = T,
+                        
+                      
                       fluidRow(
                       shiny::column(width = 3,
                                              # h6(strong("Site-image of sensor")),
@@ -121,10 +137,11 @@ ts_card_tab <- bs4TabItem(
                         br(),
                         actionButton("ts_img_save", label = "Save", icon = icon("save"), style = "color: #fff; background-color: #000104; border-color: #2e6da4" )
                       )
-                      ),
+                      )
+                      
+                      ),#bs4card
                       hr(),
                       h5("Sample data"),
-                      # checkboxInput("showdata", "Show data", value = F),
                       shinyWidgets::prettySwitch(inputId = "showdata", "Show sample data", value = F, status = "success", fill = T),
                       dataTableOutput("ts_data"),
                       width = 10
@@ -155,14 +172,48 @@ basic_cards_tab <- bs4TabItem(
         width = 2
       ),
       mainPanel(
-          h5("Appropriate title placeholder"),
-          h6(textOutput("show_date_time")),
-          plotlyOutput("plot_heatmap_x"),
-          br(),hr(), 
-          plotlyOutput("plot_heatmap_y"),
-          br(),hr(),
-          plotlyOutput("plot_heatmap_z")
-        , width = 10
+        h5("Appropriate title placeholder"),
+        h6(textOutput("show_date_time")),
+        br(),
+        fluidRow(
+        bs4Card(
+          title = "Bx",
+          status = "primary",
+          collapsible = T,
+          closable = T,
+          maximizable = T,
+          collapsed = T,
+          # width = 12,
+          shinycssloaders::withSpinner(
+          plotlyOutput("plot_heatmap_x"),type = 1, color = "#991B1B")
+        ),
+        bs4Card(
+          title = "By",
+          status = "primary",
+          collapsible = T,
+          closable = T,
+          maximizable = T,
+          collapsed = T,
+          # width = 6,
+          shinycssloaders::withSpinner(
+            plotlyOutput("plot_heatmap_y"),type = 1, color = "#991B1B")
+        ),
+        
+        br(),
+        hr(),
+        bs4Card(
+          title = "Bz",
+          status = "primary",
+          collapsible = T,
+          closable = T,
+          maximizable = T,
+          width = 12,
+          shinycssloaders::withSpinner(
+            plotlyOutput("plot_heatmap_z"),type = 1, color = "#991B1B")
+        )
+        )
+        ,
+        width = 10
       ),
       position = "right"
     )
@@ -273,7 +324,11 @@ track_defect_tab <- bs4TabItem(tabName = "tdefect",
                                                            solidHeader = FALSE,
                                                            collapsible = TRUE,
                                                            collapsed = T,
-                                                           plotOutput("dfct_plot2")
+                                                           tags$img(
+                                                             src = paste0("Line plot defect", ".png"),
+                                                             height = '500px',
+                                                             width = '1200px'
+                                                           )
                                                          ),
                                                         
                                                          bs4Card(
@@ -286,17 +341,20 @@ track_defect_tab <- bs4TabItem(tabName = "tdefect",
                                                            solidHeader = FALSE,
                                                            collapsible = TRUE,
                                                            DTOutput("dfct_dt")
-
-
                                                            )
                                                         
                                                          )
                                  )
                                ))
 
+#  sim_input_tab ----
+sim_input_tab <- bs4TabItem(
+  tabName = "siminput",
+  fluidPage()
+)
 
 
-#' social_cards_tab ----
+# social_cards_tab ----
 social_cards_tab <- bs4TabItem(
   tabName = "socialcards",
   fluidRow(

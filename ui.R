@@ -51,6 +51,7 @@ ui <-  bs4DashPage(
       compact = FALSE,
       child_indent = TRUE,
       bs4SidebarHeader(h4(strong("Explore me!"))),
+    
       bs4SidebarMenuItem(
         "Time series",
         tabName = "timeseries",
@@ -83,6 +84,12 @@ ui <-  bs4DashPage(
         tabName = "socialcards",
         icon = "id-card"
       ),
+      bs4SidebarHeader("User guide"),
+      bs4SidebarMenuItem(
+        "Read Me",
+        tabName = "user_guide",
+        icon = "info-circle"
+      ),
       bs4SidebarHeader("BS4 gallery"),
       bs4SidebarMenuItem(
         text = "Galleries",
@@ -111,7 +118,9 @@ ui <-  bs4DashPage(
       basic_cards_tab,
       cards_api_tab,
       track_defect_tab,
+      sim_input_tab,
       social_cards_tab,
+      intro_tab,
       gallery_2_tab
     )
   )

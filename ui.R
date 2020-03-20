@@ -3,6 +3,8 @@ ui <-  bs4DashPage(
   enable_preloader = TRUE,
   loading_duration = 3,
   controlbar_overlay = FALSE,
+  title = "Smart pipe development program",
+  loading_background = "#3B967F",
   navbar = bs4DashNavbar(
     status = "info",
     rightUi = tagList(
@@ -33,7 +35,8 @@ ui <-  bs4DashPage(
         footer = p("The footer", class = "text-center"),
         "This is the menu content."
       )
-    )
+    ),
+    leftUi = h3(strong("Smart pipe development program"), style = "color : #D4DE2F; margin-left: 500px ")
   ),
   sidebar = bs4DashSidebar(
     expand_on_hover = TRUE,
@@ -68,7 +71,7 @@ ui <-  bs4DashPage(
         icon = "cube"
       ),
       bs4SidebarMenuItem(
-        "Track defect",
+        "Track defect growth",
         tabName = "tdefect",
         icon = "cube"
       ),
@@ -127,6 +130,5 @@ ui <-  bs4DashPage(
 ,
   footer = bs4DashFooter(
     right_text = a(href = "https://github.com/india-babai/BS4DASH",  target = "_blank", paste("Sinclair,", Sys.Date()))
-  ),
-  title = "InfluxDB Showcase"
+  )
 )

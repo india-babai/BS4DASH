@@ -318,6 +318,7 @@ server <-  function(input, output, session) {
     
     temp <- data.frame(input$dt_date,
                        input$dt_method,
+                       input$dt_location,
                        input$dt_volume,
                        input$dt_x,
                        input$dt_y,

@@ -14,6 +14,7 @@ library(dygraphs)
 library(shinyalert)
 library(lattice)
 library(shinycssloaders)
+library(openxlsx)
 
 
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
@@ -31,8 +32,8 @@ blank_tab$`Y axis(mm)` <- numeric(0)
 blank_tab$`Picture of defect` = character(0)
 
 # initial - table
-initial_tab <- openxlsx::read.xlsx(datapath, sep.names = ' ')
-initial_tab[["Date"]] <- as.Date(initial_tab[["Date"]], "1900-01-01")
+initial_tab <- openxlsx::read.xlsx(datapath, sep.names = ' ', detectDates = T)
+
 
 # color statuses
 statusColors <- c(
@@ -57,13 +58,6 @@ statusColors <- c(
   "light"
 )
 
-# Intro tab
-intro_tab <- bs4TabItem(
-  tabName = "user_guide",
-  h3("Read Me"),
-  h4("Quick summary on how to use the app and where to find required information")
-  
-)
 
 # Time-series tab ----
     # InfluxDB Database contains many measurements
@@ -95,7 +89,7 @@ ts_card_tab <- bs4TabItem(
 
                     ),
                     mainPanel(
-                      h5("Timeseries title placeholder"),
+                      h6(strong("Timeseries analysis")),
                       hr(),
                       shinycssloaders::withSpinner(
                       dygraphOutput("ts_dy_plot", height = "700px", width = "auto"), type = 1, color = "#991B1B"
@@ -161,10 +155,10 @@ basic_cards_tab <- bs4TabItem(
   fluidPage(
     sidebarLayout(
       sidebarPanel(
-        textInput("connection", "InfluxDB connection", value = 8086),
-        textInput("dbname", "InfluxDB database name", value = "example3"),
-        textInput("measurement", "InfluxDB measurement name", value = "two_mab_test_run"),
-        selectInput("magtype", "Choose Mag-type", choices =  c("LIS3MDL", "MLX90393")),
+        # textInput("connection", "InfluxDB connection", value = 8086),
+        # textInput("dbname", "InfluxDB database name", value = "example3"),
+        textInput("measurement", "Table name", value = "two_mab_test_run"),
+        selectInput("magtype", "Sensor patches", choices =  c("MAB 1(LIS)" = "LIS3MDL", "MAB 2(MLX)" = "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
         timeInput("time", "Time", value = "2020-01-07 16:53:00"),
         actionButton("heatmap_action", "Submit", icon = icon("refresh"),
@@ -172,7 +166,7 @@ basic_cards_tab <- bs4TabItem(
         width = 2
       ),
       mainPanel(
-        h5("Appropriate title placeholder"),
+        h5("Heatmap visualisation"),
         h6(textOutput("show_date_time")),
         br(),
         fluidRow(
@@ -232,7 +226,8 @@ cards_api_tab <- bs4TabItem(
     status = "warning", 
     solidHeader = FALSE, 
     collapsible = TRUE,
-    DTOutput("dt"),
+    shinycssloaders::withSpinner(
+    DTOutput("dt"), type = 4, color = "#991B1B"),
     actionButton(inputId = "savedat", "Save", icon = icon("save"))
   ),
   hr(),
@@ -246,12 +241,15 @@ cards_api_tab <- bs4TabItem(
            textInput("dt_method", "Method", value = "Optical")),
     
     column(width = 2,
+           textInput("dt_location", "Defect location", value = "London")),
+    
+    column(width = 1, offset = 1,
            numericInput("dt_volume", "Volume", 0.2)),
     
-    column(width = 2,
+    column(width = 1,
            numericInput("dt_x", "X axis(mm)", 15)),
     
-    column(width = 2,
+    column(width = 1,
            numericInput("dt_y", "Y axis(mm)", 0.2)),
     
     column(width = 2,
@@ -304,7 +302,7 @@ track_defect_tab <- bs4TabItem(tabName = "tdefect",
                                                          
                                                          bs4Card(
 
-                                                           title = "Progression of corrosion over time",
+                                                           title = "Progression of depth profiler output over time",
                                                            closable = TRUE,
                                                            maximizable = TRUE,
                                                            width = 12,
@@ -488,6 +486,14 @@ social_cards_tab <- bs4TabItem(
 )
 
 
+
+# Intro tab ----
+intro_tab <- bs4TabItem(
+  tabName = "user_guide",
+  h3("Read Me"),
+  h4("Quick summary on how to use the app and where to find required information")
+  
+)
 
 # gallery_2_tab ----
 gallery_2_tab <- bs4TabItem(

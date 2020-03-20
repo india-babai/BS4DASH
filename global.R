@@ -155,6 +155,7 @@ basic_cards_tab <- bs4TabItem(
   fluidPage(
     sidebarLayout(
       sidebarPanel(
+        h6(icon("wrench"),strong("Customizations")),
         # textInput("connection", "InfluxDB connection", value = 8086),
         # textInput("dbname", "InfluxDB database name", value = "example3"),
         textInput("measurement", "Table name", value = "two_mab_test_run"),
@@ -166,7 +167,8 @@ basic_cards_tab <- bs4TabItem(
         width = 2
       ),
       mainPanel(
-        h5("Heatmap visualisation"),
+        h6(strong("Heatmap visualisation")),
+        hr(),
         h6(textOutput("show_date_time")),
         br(),
         fluidRow(

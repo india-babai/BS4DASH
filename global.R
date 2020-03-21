@@ -15,6 +15,7 @@ library(shinyalert)
 library(lattice)
 library(shinycssloaders)
 library(openxlsx)
+library(magick)
 
 
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
@@ -156,8 +157,8 @@ basic_cards_tab <- bs4TabItem(
     sidebarLayout(
       sidebarPanel(
         h6(icon("wrench"),strong("Customizations")),
-        # textInput("connection", "InfluxDB connection", value = 8086),
-        # textInput("dbname", "InfluxDB database name", value = "example3"),
+        textInput("connection", "InfluxDB connection", value = 8086),
+        textInput("dbname", "InfluxDB database name", value = "example3"),
         textInput("measurement", "Table name", value = "two_mab_test_run"),
         selectInput("magtype", "Sensor patches", choices =  c("MAB 1(LIS)" = "LIS3MDL", "MAB 2(MLX)" = "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
@@ -178,7 +179,7 @@ basic_cards_tab <- bs4TabItem(
           collapsible = T,
           closable = T,
           maximizable = T,
-          collapsed = T,
+          collapsed = F,
           # width = 12,
           shinycssloaders::withSpinner(
           plotlyOutput("plot_heatmap_x"),type = 1, color = "#991B1B")
@@ -189,7 +190,7 @@ basic_cards_tab <- bs4TabItem(
           collapsible = T,
           closable = T,
           maximizable = T,
-          collapsed = T,
+          collapsed = F,
           # width = 6,
           shinycssloaders::withSpinner(
             plotlyOutput("plot_heatmap_y"),type = 1, color = "#991B1B")
@@ -225,7 +226,7 @@ cards_api_tab <- bs4TabItem(
     closable = TRUE, 
     maximizable = TRUE,
     width = 12,
-    status = "warning", 
+    status = "secondary", 
     solidHeader = FALSE, 
     collapsible = TRUE,
     shinycssloaders::withSpinner(
@@ -243,16 +244,16 @@ cards_api_tab <- bs4TabItem(
            textInput("dt_method", "Method", value = "Optical")),
     
     column(width = 2,
-           textInput("dt_location", "Defect location", value = "London")),
+           textInput("dt_location", "Defect location", value = "30cm from the end, at the pipe bottom")),
     
     column(width = 1, offset = 1,
-           numericInput("dt_volume", "Volume", 0.2)),
+           numericInput("dt_volume", "Volume", round(runif(1),2) )),
     
     column(width = 1,
-           numericInput("dt_x", "X axis(mm)", 15)),
+           numericInput("dt_x", "X axis(mm)", round(runif(1)*10,2))),
     
     column(width = 1,
-           numericInput("dt_y", "Y axis(mm)", 0.2)),
+           numericInput("dt_y", "Y axis(mm)", round(runif(1)*100,2))),
     
     column(width = 2,
            fileInput("dt_pic", "Picture of the defect", accept = c("jpg", "png", "PNG", "JPG"))),
@@ -323,7 +324,7 @@ track_defect_tab <- bs4TabItem(tabName = "tdefect",
                                                            status = "secondary",
                                                            solidHeader = FALSE,
                                                            collapsible = TRUE,
-                                                           collapsed = T,
+                                                           collapsed = F,
                                                            tags$img(
                                                              src = paste0("Line plot defect", ".png"),
                                                              height = '500px',

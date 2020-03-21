@@ -295,8 +295,13 @@ server <-  function(input, output, session) {
   observeEvent(input$add.button,{
     cat("addEntry\n")
 
+    withProgress(message = "Working", value = 0, {
+      
+    # Increment the progress bar, and update the detail text.
+    incProgress(1/3, detail = "Loading the image")
+      
     if (!is.null(input$dt_pic)) {
-      im <- imager::load.image(input$dt_pic$datapath)
+      im <- magick::image_read(input$dt_pic$datapath)
       im_name <-
         Sys.time() %>%
         as.character() %>%
@@ -304,9 +309,10 @@ server <-  function(input, output, session) {
         gsub(":", "_", .) %>%
         gsub("-", "_", .)
       
-      save.image(
-        im = im,
-        file =  paste0("D:/DS/IoT my task/AP/bs4dash/BS4DASH/www/", im_name, ".png")
+      
+      magick::image_write(
+        image = im,
+        path =  paste0("D:/DS/IoT my task/AP/bs4dash/BS4DASH/www/", im_name, ".png"), quality = 50
       )
       im_html <-
         paste0('<img src = ', "'", im_name, ".png", "'", " height = '52' ></img>")
@@ -314,7 +320,10 @@ server <-  function(input, output, session) {
     else{
       im_html <- NA
     }
-    
+      
+    # Increment the progress bar, and update the detail text.
+    incProgress(1/3, detail = "Saving the image")
+      
     
     temp <- data.frame(input$dt_date,
                        input$dt_method,
@@ -327,6 +336,12 @@ server <-  function(input, output, session) {
     colnames(temp) <- colnames(values$df)
     values$df <- rbind(values$df, temp)
     openxlsx::write.xlsx(values$df, file = datapath)
+    
+    # Increment the progress bar, and update the detail text.
+    incProgress(1/3, detail = "Saving the data")
+    
+    
+    }) # withProgress
   })
   
   observeEvent(input$delete.button, {
@@ -356,6 +371,8 @@ server <-  function(input, output, session) {
   observeEvent(input[["dt_cell_edit"]], {
     cellinfo <- input[["dt_cell_edit"]]
     values$df <- editData(values$df, input[["dt_cell_edit"]], "dt")
+    showModal(modalDialog(h6("Press Save button below to record changes made"),title = "Press Save!",fade = T, easyClose = T, footer = NULL, size = "s", 
+                           style = "color: #fff; background-color: #336600; border-color: #336600"))
   })
   
   

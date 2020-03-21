@@ -36,7 +36,7 @@ ui <-  bs4DashPage(
         "This is the menu content."
       )
     ),
-    leftUi = h3(strong("Smart pipe development program"), style = "color : #D4DE2F; margin-left: 500px ")
+    leftUi = h3(strong("Smart pipe development program"), style = "color : #ffffff; margin-left: 500px ")
   ),
   sidebar = bs4DashSidebar(
     expand_on_hover = TRUE,

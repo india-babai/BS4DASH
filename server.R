@@ -5,7 +5,8 @@ server <-  function(input, output, session) {
   con <- reactive(
     influxdbr::influx_connection(
       host = "localhost",
-      port = as.numeric(input$connection),
+      # port = as.numeric(input$connection),
+      port = 8086,
       user = "username",
       pass = "password"
     )
@@ -235,7 +236,8 @@ server <-  function(input, output, session) {
   dat <- eventReactive(input$heatmap_action,{
     influxdbr::influx_select(
       con(),
-      db = input$dbname,
+      # db = input$dbname,
+      db = "example3",
       measurement = input$measurement,
       field_keys = "X_ut, Y_ut, Z_ut, T_c",
       where = paste("time = ", paste0("'",datetime(),"'"),"and mag_type = ",paste0("'", input$magtype, "'" )),

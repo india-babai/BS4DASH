@@ -21,6 +21,9 @@ library(magick)
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/3d_heatmap.R")
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/ts_plot.R")
 source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/from_to_module.R")
+source("D:/DS/IoT my task/AP/bs4dash/BS4DASH/readme_html.R")
+
+# The following excel is required for the 'Cross reference data' tab
 datapath <- "D:/DS/IoT my task/AP/bs4dash/BS4DASH/inputs/table_for_user.xlsx"
 
 # blank table
@@ -157,8 +160,8 @@ basic_cards_tab <- bs4TabItem(
     sidebarLayout(
       sidebarPanel(
         h6(icon("wrench"),strong("Customizations")),
-        textInput("connection", "InfluxDB connection", value = 8086),
-        textInput("dbname", "InfluxDB database name", value = "example3"),
+        # textInput("connection", "InfluxDB connection", value = 8086),
+        # textInput("dbname", "InfluxDB database name", value = "example3"),
         textInput("measurement", "Table name", value = "two_mab_test_run"),
         selectInput("magtype", "Sensor patches", choices =  c("MAB 1(LIS)" = "LIS3MDL", "MAB 2(MLX)" = "MLX90393")),
         dateInput("date", "Date", value = "2020-01-07" ),
@@ -490,11 +493,10 @@ social_cards_tab <- bs4TabItem(
 
 
 
-# Intro tab ----
-intro_tab <- bs4TabItem(
+# Read me ----
+readme_tab <- bs4TabItem(
   tabName = "user_guide",
-  h3("Read Me"),
-  h4("Quick summary on how to use the app and where to find required information")
+  readme_html
   
 )
 

@@ -123,7 +123,7 @@ ui <-  bs4DashPage(
       track_defect_tab,
       sim_input_tab,
       social_cards_tab,
-      intro_tab,
+      readme_tab,
       gallery_2_tab
     )
   )
